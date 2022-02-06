@@ -18,7 +18,7 @@ export function NewRoomForm() {
     resolver: yupResolver(youtubeUrlSchema),
   });
 
-  const onSubmit = handleSubmit((formData) => {});
+  const onSubmit = handleSubmit((formData) => formData);
 
   return (
     <Box component="form" display="flex" justifyContent="center">

@@ -16,7 +16,7 @@ export function FindCourses() {
     resolver: yupResolver(youtubeQuerySchema),
   });
 
-  const onSubmit = handleSubmit((formData) => {});
+  const onSubmit = handleSubmit((formData) => formData);
 
   return (
     <Box component="form" display="flex" justifyContent="center">
