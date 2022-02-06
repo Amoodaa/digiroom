@@ -13,7 +13,7 @@ export const FindCoursesResults = () => {
       {examplePlaylistSearch.items.map(
         ({
           id: { playlistId, kind },
-          snippet: { thumbnails, description, title },
+          snippet: { thumbnails, description, title, channelTitle },
         }) => (
           <Card
             sx={{
@@ -39,6 +39,9 @@ export const FindCoursesResults = () => {
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   {title}
+                </Typography>
+                <Typography gutterBottom variant="h6" component="div">
+                  {channelTitle}
                 </Typography>
                 {description && (
                   <Typography variant="body2" color="text.secondary">
