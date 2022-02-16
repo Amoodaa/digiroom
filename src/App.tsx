@@ -3,12 +3,12 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import CssBaseline from "@mui/material/CssBaseline";
-import { Home } from "features/Home";
-import { Route, Routes } from "react-router";
-
 import { red } from "@mui/material/colors";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Home } from "features/Home";
+import { Room } from "features/Room";
+import { Route, Routes } from "react-router";
 
 const theme = createTheme({
   palette: {
@@ -25,6 +25,7 @@ export default function App() {
       <CssBaseline />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/:roomId" element={<Room />} />
       </Routes>
     </ThemeProvider>
   );
