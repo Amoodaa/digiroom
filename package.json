@@ -1,54 +1,12 @@
 {
-  "name": "grad-project",
-  "version": "0.1.0",
+  "name": "digiroom",
   "private": true,
-  "dependencies": {
-    "@emotion/react": "^11.7.1",
-    "@emotion/styled": "^11.6.0",
-    "@fontsource/roboto": "^4.5.3",
-    "@hookform/resolvers": "^2.8.8",
-    "@mui/icons-material": "^5.4.2",
-    "@mui/material": "^5.4.0",
-    "@reduxjs/toolkit": "^1.5.1",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-redux": "^7.1.7",
-    "@types/youtube": "^0.0.46",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-hook-form": "^7.26.0",
-    "react-player": "^2.9.0",
-    "react-redux": "^7.2.0",
-    "react-router-dom": "6",
-    "react-scripts": "5.0.0",
-    "typescript": "~4.1.5",
-    "youtube.ts": "^0.2.5",
-    "yup": "^0.32.11"
-  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "dev:client": "cd client && yarn dev",
+    "dev:server": "cd server && yarn dev"
   }
 }
