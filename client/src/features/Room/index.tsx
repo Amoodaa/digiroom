@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import { useParams } from 'react-router';
+import { socketClient } from 'Socket';
 import { Header } from '../../components/Header';
 import { ChatMessage as IChatMessage, exampleChat, exampleYTUrl } from './data';
 
@@ -20,8 +21,12 @@ export const ChatMessage: FC<{ chatItem: IChatMessage }> = ({ chatItem }) => (
   </Typography>
 );
 
+socketClient.connect();
+socketClient.on('pause-video', console.log);
+
 export const Room = () => {
   const { roomId } = useParams<{ roomId: string }>();
+
   return (
     <>
       <Header roomId={roomId} />
