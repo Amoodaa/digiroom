@@ -14,6 +14,7 @@
     "sourceMap": true,
     "declaration": true,
     "outDir": "dist",
+    "declarationDir": "types",
     "allowJs": true,
     "noEmit": false,
     "esModuleInterop": true,
@@ -36,5 +37,5 @@
     }
   },
   "include": ["src/**/*.ts", "src/**/*.json", ".env"],
-  "exclude": ["node_modules", "src/http", "src/logs", "src/tests"]
+  "exclude": ["node_modules", "src/http", "src/logs", "src/tests", "types"]
 }

@@ -6,8 +6,10 @@ import '@fontsource/roboto/700.css';
 import { red } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Snackbars } from 'components/Snackbar';
 import { Home } from 'features/Home';
 import { Room } from 'features/Room';
+import { SnackbarProvider } from 'notistack';
 import { Route, Routes } from 'react-router';
 
 const theme = createTheme({
@@ -21,6 +23,9 @@ const theme = createTheme({
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <Snackbars />
+      </SnackbarProvider>
       {/* The rest of your application */}
       <CssBaseline />
       <Routes>
