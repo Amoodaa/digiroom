@@ -99,7 +99,7 @@ export const Room = () => {
           </Paper>
         </Box>
         <Button onClick={onPauseClick}>PAUSE</Button>
-        <h1>{playing}</h1>
+        <h1>{playing + ''}</h1>
         <pre>{JSON.stringify(room, null, 2)}</pre>
       </Container>
     </>

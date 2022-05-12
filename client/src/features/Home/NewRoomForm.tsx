@@ -5,27 +5,26 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { youtubeUrlRegex } from 'utils/regex.util';
-import { useState } from 'react';
-import { RoomNameForm } from './RoomNameForm';
+import { FC } from 'react';
 
 export const youtubeUrlSchema = yup.object({
   youtubeUrl: yup.string().matches(youtubeUrlRegex, 'Please provide a valid youtube url!').required('Please provide a youtube url to start a room!'),
 });
 
-export function NewRoomForm() {
-  const youtubeUrlForm = useForm({
+type YoutubeUrlForm = {
+  youtubeUrl: string;
+};
+
+export const NewRoomForm: FC<{ onSubmit: (formData: YoutubeUrlForm) => void }> = ({ onSubmit }) => {
+  const youtubeUrlForm = useForm<YoutubeUrlForm>({
     defaultValues: { youtubeUrl: '' },
     shouldFocusError: true,
     resolver: yupResolver(youtubeUrlSchema),
   });
 
-  const [open, setOpen] = useState<boolean>(false);
-
   const youtubeFormOnSubmit = youtubeUrlForm.handleSubmit(formData => {
-    setOpen(true);
+    onSubmit(formData);
   });
-
-  const handleClose = () => setOpen(false);
 
   return (
     <>
@@ -41,7 +40,6 @@ export function NewRoomForm() {
           Start a room
         </Button>
       </Box>
-      {<RoomNameForm open={open} handleClose={handleClose} youtubeUrl={youtubeUrlForm.getValues('youtubeUrl')} />}
     </>
   );
-}
+};

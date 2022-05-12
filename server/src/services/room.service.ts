@@ -3,7 +3,6 @@ import { HttpError } from '@/exceptions/HttpError';
 import { isEmpty } from '@utils/util';
 import { RoomModel, Room } from '@/models/room.model';
 import { youtubeClient } from '@/utils/youtube';
-import { io } from '@/utils/socket';
 
 export class RoomService {
   public async findRoomById(roomId: string): Promise<Room> {
@@ -61,7 +60,7 @@ export class RoomService {
       }
     }
 
-    newRoom.currentVideo = await youtubeClient.videos.get(videoId);
+    newRoom.currentVideo = await youtubeClient.videos.get(newRoom.currentVideoId);
 
     const createRoomData = await RoomModel.create(newRoom);
 

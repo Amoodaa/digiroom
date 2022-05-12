@@ -40,14 +40,14 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
   const roomFormOnSubmit = roomNameForm.handleSubmit(async ({ roomName }) => {
     const parsed = urlParser.parse(youtubeUrl) as YouTubeParseResult;
     if (parsed) {
-      await dispatch(
+      const result = await dispatch(
         roomActions.createRoom({
           name: roomName,
           playlistId: parsed.list,
           videoId: parsed.id,
         }),
       );
-      navigate(`/${roomName}`);
+      if (result.meta.requestStatus === 'fulfilled') navigate(`/${roomName}`);
       // TODO: copy room link into clipboard+
     }
   });
