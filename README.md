@@ -1,5 +1,5 @@
 # Digiroom
-
+A watch-together focused on youtube courses, but you can watch any youtube video, you know?
 ## How to run:
 
 - Install nodejs (preferablely v14, 16 probably will work)
