@@ -7,7 +7,7 @@ import validationMiddleware from '@middlewares/validation.middleware';
 class RoomsRoute implements Routes {
   public path = '/room';
   public router = Router({ mergeParams: true });
-  public usersController = new RoomsController();
+  public roomController = new RoomsController();
 
   constructor() {
     this.initializeRoutes();
@@ -15,10 +15,10 @@ class RoomsRoute implements Routes {
 
   private initializeRoutes() {
     // /room
-    this.router.post(``, validationMiddleware(CreateRoomDto, 'body'), this.usersController.createRoom);
-    this.router.get(`/:id`, this.usersController.getRoomById);
-    this.router.put(`/:id`, validationMiddleware(CreateRoomDto, 'body', true), this.usersController.updateRoom);
-    this.router.delete(`/:id`, this.usersController.deleteRoom);
+    this.router.post(``, validationMiddleware(CreateRoomDto, 'body'), this.roomController.createRoom);
+    this.router.get(`/:roomName`, this.roomController.getRoomByName);
+    this.router.put(`/:roomId`, validationMiddleware(CreateRoomDto, 'body', true), this.roomController.updateRoom);
+    this.router.delete(`/:roomId`, this.roomController.deleteRoom);
   }
 }
 

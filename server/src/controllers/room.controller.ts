@@ -6,10 +6,10 @@ import { NextFunction, Request, Response } from 'express';
 class RoomController {
   public roomService = new RoomService();
 
-  public getRoomById = async (req: Request, res: Response, next: NextFunction) => {
+  public getRoomByName = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId: string = req.params.id;
-      const findOneRoomData: Room = await this.roomService.foundRoomById(userId);
+      const { roomName } = req.params;
+      const findOneRoomData: Room = await this.roomService.findRoomByName(roomName);
 
       res.status(200).json({ data: findOneRoomData, message: 'findOne' });
     } catch (error) {
@@ -30,9 +30,9 @@ class RoomController {
 
   public updateRoom = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId: string = req.params.id;
+      const { roomId } = req.params;
       const roomData: CreateRoomDto = req.body;
-      const updateRoomData: Room = await this.roomService.updateRoom(userId, roomData);
+      const updateRoomData: Room = await this.roomService.updateRoom(roomId, roomData);
 
       res.status(200).json({ data: updateRoomData, message: 'updated' });
     } catch (error) {
@@ -42,8 +42,8 @@ class RoomController {
 
   public deleteRoom = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId: string = req.params.id;
-      const deleteRoomData: Room = await this.roomService.deleteRoom(userId);
+      const { roomId } = req.params;
+      const deleteRoomData: Room = await this.roomService.deleteRoom(roomId);
 
       res.status(200).json({ data: deleteRoomData, message: 'deleted' });
     } catch (error) {
