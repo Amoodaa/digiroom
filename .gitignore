@@ -23,3 +23,4 @@ yarn-debug.log*
 yarn-error.log*
 logs
 server/types
+digiroom-types/server-types
