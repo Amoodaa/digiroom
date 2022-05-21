@@ -27,9 +27,9 @@ export const ChatMessage: FC<{ chatItem: IChatMessage }> = ({ chatItem }) => (
 
 export const Room = () => {
   const dispatch = useAppDispatch();
-  const youtubePlayer = useRef<ReactPlayer | null>(null);
   const { roomId = '' } = useParams<{ roomId: string }>();
-  const { roomConnected } = useConnect({ roomId });
+  const { roomConnection } = useConnect({ roomId });
+  const youtubePlayer = useRef<ReactPlayer | null>(null);
   const room = useAppSelector(s => s.room.room);
   const [playing, setPlaying] = useState(true);
   const currentVideoId = useAppSelector(s => s.room.room?.currentVideoId) ?? '';
@@ -45,28 +45,31 @@ export const Room = () => {
     dispatch(roomActions.getRoom({ roomId }));
   }, [dispatch, roomId]);
 
-  const onPlay = useCallback(() => {
-    setPlaying(true);
-  }, []);
+  const pausePlaying = useCallback(() => setPlaying(false), []);
 
-  const pause = useCallback(() => setPlaying(false), []);
+  const onPauseClick = useCallback(() => {
+    roomConnection.emit('pause-room');
+    pausePlaying();
+  }, [pausePlaying, roomConnection]);
 
-  const onPauseClick = () => {
-    roomConnected.emit('pause-room');
-    pause();
-  };
+  const resumePlaying = useCallback(() => setPlaying(true), []);
+
+  const onPlayClick = useCallback(() => {
+    roomConnection.emit('resume-room');
+    resumePlaying();
+  }, [resumePlaying, roomConnection]);
 
   useEffect(() => {
-    if (!roomConnected.connected) return;
+    if (!roomConnection.connected) return;
 
-    roomConnected.on('resume-room', onPlay);
-    roomConnected.on('pause-room', pause);
+    roomConnection.on('resume-room', resumePlaying);
+    roomConnection.on('pause-room', pausePlaying);
 
     return () => {
-      roomConnected.removeListener('resume-room', onPlay);
-      roomConnected.removeListener('pause-room', pause);
+      roomConnection.removeListener('resume-room', resumePlaying);
+      roomConnection.removeListener('pause-room', pausePlaying);
     };
-  }, [roomConnected.connected, roomConnected, roomId, onPlay, pause]);
+  }, [roomConnection.connected, roomConnection, roomId, pausePlaying, resumePlaying]);
 
   return (
     <>
@@ -98,7 +101,7 @@ export const Room = () => {
             </Box>
           </Paper>
         </Box>
-        <Button onClick={onPauseClick}>PAUSE</Button>
+        <Button onClick={playing ? onPauseClick : onPlayClick}>{playing ? 'Pause' : 'Play'}</Button>
         <h1>{playing + ''}</h1>
         <pre>{JSON.stringify(room, null, 2)}</pre>
       </Container>

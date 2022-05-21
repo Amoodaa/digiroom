@@ -22,6 +22,15 @@ export const initializeSocketIOServer = (httpServer: Server) => {
       socket.on('pause-room', () => {
         socket.to(roomId).emit('pause-room');
       });
+      socket.on('resume-room', () => {
+        socket.to(roomId).emit('resume-room');
+      });
+    });
+
+    socket.on('leave-room', roomId => {
+      socket.leave(roomId);
+      socket.removeAllListeners('pause-room');
+      socket.removeAllListeners('resume-room');
     });
   });
 };

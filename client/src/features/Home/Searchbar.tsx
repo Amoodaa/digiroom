@@ -22,10 +22,7 @@ export function Searchbar() {
     resolver: yupResolver(youtubeSearchSchema),
   });
 
-  const onSubmit = form.handleSubmit(async formData => {
-    console.log('so???');
-    await dispatch(searchActions.searchYoutube(formData));
-  });
+  const onSubmit = form.handleSubmit(formData => dispatch(searchActions.searchYoutube(formData)));
 
   return (
     <Box component="form" display="flex" justifyContent="center" onSubmit={onSubmit}>
