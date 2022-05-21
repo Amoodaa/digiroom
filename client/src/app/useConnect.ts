@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { baseConfig } from 'baseConfig';
 import { io, Socket } from 'socket.io-client';
 import { SocketEventsMap } from 'digiroom-types';
 
-export const useConnect = ({ roomId }: { roomId: string }) => {
-  const [roomConnected] = useState<Socket<SocketEventsMap>>(() => io(`${baseConfig.API_URL}/youtube`).connect());
+const socket: Socket<SocketEventsMap> = io(`${baseConfig.API_URL}/youtube`).connect();
 
+export const useConnect = ({ roomId }: { roomId: string }) => {
   useEffect(() => {
-    roomConnected.emit('join-room', roomId);
+    socket.emit('join-room', roomId);
 
     // TODO: disconnect
-  }, [roomConnected, roomId]);
+    return () => {
+      socket.emit('leave-room', roomId);
+    };
+  }, [roomId]);
 
-  return { roomConnected };
+  return { roomConnection: socket };
 };
