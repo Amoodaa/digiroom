@@ -22,15 +22,19 @@ jobs:
         env:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
-      - id: "auth"
+      - name: Copy client/app.yaml to client/build/app.yaml
+        run: cp client/app.yaml client/build/app.yaml
+
+      - name: Authenticating with GCP
         uses: "google-github-actions/auth@v0"
         with:
           credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
 
-      - id: "deploy_client"
+      - name: Deploy client app to default service
         uses: "google-github-actions/deploy-appengine@v0"
         with:
-          deliverables: "client/app.yaml"
+          working_directory: client/build
+          deliverables: app.yaml
           promote: true
           version: ${{ github.sha }}
 
