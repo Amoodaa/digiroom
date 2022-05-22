@@ -5,5 +5,8 @@
   "eslint.workingDirectories": [
     "client",
     "server"
-  ]
+  ],
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": "file:///d%3A/code/digiroom/server/.github/workflows/deploy.yaml"
+  }
 }

@@ -1,0 +1,55 @@
+name: Deploy to GCP App engines
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn build
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+
+      - name: Copy client/app.yaml to client/build/app.yaml
+        run: cp client/app.yaml client/build/app.yaml
+
+      - name: Authenticating with GCP
+        uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
+
+      - name: Deploy client app to default service
+        uses: "google-github-actions/deploy-appengine@v0"
+        with:
+          working_directory: client/build
+          deliverables: app.yaml
+          promote: true
+          version: ${{ github.sha }}
+
+      - uses: ikuanyshbekov/app-yaml-env-compiler@v1.0
+        env:
+          NODE_ENV: production
+          DB_URL: ${{ secrets.DB_URL }}
+          ORIGIN: ${{ secrets.APP_ORIGIN }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          CREDENTIALS: true
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+
+      - name: Deploy Server app to server service
+        uses: "google-github-actions/deploy-appengine@v0"
+        with:
+          deliverables: "app.yaml"
+          promote: true
+          version: ${{ github.sha }}

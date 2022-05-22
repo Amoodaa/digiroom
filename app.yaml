@@ -1,0 +1,18 @@
+runtime: nodejs16
+service: server
+instance_class: B1
+
+basic_scaling:
+  max_instances: 1
+  idle_timeout: 10m
+
+network:
+  session_affinity: true
+
+env_variables:
+  NODE_ENV: $NODE_ENV
+  DB_URL: $DB_URL
+  ORIGIN: $ORIGIN
+  SECRET_KEY: $SECRET_KEY
+  CREDENTIALS: $CREDENTIALS
+  YOUTUBE_API_KEY: $YOUTUBE_API_KEY
