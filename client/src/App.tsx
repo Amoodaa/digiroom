@@ -30,7 +30,7 @@ export default function App() {
       <CssBaseline />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/:roomId" element={<RoomPage />} />
+        <Route path="/:roomName" element={<RoomPage />} />
       </Routes>
     </ThemeProvider>
   );

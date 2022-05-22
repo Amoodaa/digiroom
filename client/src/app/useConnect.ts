@@ -4,18 +4,18 @@ import { baseConfig } from 'baseConfig';
 import { io, Socket } from 'socket.io-client';
 import { SocketEventsMap } from 'digiroom-types';
 
-const socket: Socket<SocketEventsMap> = io(`${baseConfig.API_URL}/youtube`);
+const socket: Socket<SocketEventsMap> = io(`${baseConfig.API_URL}/youtube`, { transports: ['websocket'] });
 socket.connect();
 
-export const useConnect = ({ roomId }: { roomId: string }) => {
+export const useConnect = ({ roomName }: { roomName: string }) => {
   useEffect(() => {
-    socket.emit('join-room', roomId);
+    socket.emit('join-room', roomName);
 
     // TODO: disconnect
     return () => {
-      socket.emit('leave-room', roomId);
+      socket.emit('leave-room', roomName);
     };
-  }, [roomId]);
+  }, [roomName]);
 
   useEffect(() => {
     const onConnect = () => {

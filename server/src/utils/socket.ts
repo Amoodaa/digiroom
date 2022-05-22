@@ -17,25 +17,40 @@ export const initializeSocketIOServer = (httpServer: Server) => {
   const youtubeTopic = io.of('/youtube');
 
   youtubeTopic.on('connection', socket => {
-    socket.on('join-room', roomId => {
-      socket.join(roomId);
+    socket.on('join-room', roomName => {
+      socket.join(roomName);
 
       socket.on('pause-room', () => {
-        youtubeTopic.to(roomId).emit('pause-room');
+        youtubeTopic.to(roomName).emit('pause-room');
       });
 
       socket.on('resume-room', () => {
-        youtubeTopic.to(roomId).emit('resume-room');
+        youtubeTopic.to(roomName).emit('resume-room');
       });
 
-      socket.on('change-video', async (roomId, videoId) => {
-        const room = await roomService.changeCurrentVideo(roomId, videoId);
-        youtubeTopic.to(roomId).emit('changed-video', room);
+      socket.on('change-video', async (roomName, videoId) => {
+        const room = await roomService.changeCurrentVideo(roomName, videoId);
+        youtubeTopic.to(roomName).emit('changed-video', room);
+      });
+
+      socket.on('seek-video', timeInSeconds => {
+        youtubeTopic.to(roomName).emit('seek-video', timeInSeconds);
+      });
+
+      socket.on('request-room-player-data', async () => {
+        const connectedSockets = await youtubeTopic.to(roomName).fetchSockets();
+        if (connectedSockets.length > 0) {
+          socket.once('share-room-player-data', playerState => {
+            youtubeTopic.to(roomName).emit('share-room-player-data', playerState);
+          });
+          const [firstSocket] = connectedSockets;
+          firstSocket.emit('request-room-player-data');
+        }
       });
     });
 
-    socket.on('leave-room', roomId => {
-      socket.leave(roomId);
+    socket.on('leave-room', roomName => {
+      socket.leave(roomName);
       socket.removeAllListeners('pause-room');
       socket.removeAllListeners('resume-room');
       socket.removeAllListeners('change-video');

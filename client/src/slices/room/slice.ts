@@ -53,9 +53,9 @@ const createRoom = createAsyncThunk(`${roomSlice.name}/createRoom`, async (paylo
   }
 });
 
-const getRoom = createAsyncThunk(`${roomSlice.name}/getRoom`, async ({ roomId }: { roomId: string }, { rejectWithValue }) => {
+const getRoom = createAsyncThunk(`${roomSlice.name}/getRoom`, async ({ roomName }: { roomName: string }, { rejectWithValue }) => {
   try {
-    const { data } = await axios.get<ApiResponse<Room>>(`/room/${roomId}`);
+    const { data } = await axios.get<ApiResponse<Room>>(`/room/${roomName}`);
     return data;
   } catch (e) {
     return rejectWithValue(e);

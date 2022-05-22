@@ -76,13 +76,15 @@ export class RoomService {
   //   return foundRoom;
   // }
 
-  public async changeCurrentVideo(name: string, videoId: string): Promise<Room> {
-    const foundRoom = await RoomModel.findOne({ name }).lean();
+  public async changeCurrentVideo(roomName: string, videoId: string): Promise<Room> {
+    const foundRoom = await RoomModel.findOne({ name: roomName });
 
     if (!foundRoom) throw new HttpError(404, "You're not room");
 
     foundRoom.currentVideoId = videoId;
     foundRoom.currentVideo = await youtubeClient.videos.get(foundRoom.currentVideoId);
+
+    await foundRoom.save();
 
     return foundRoom;
   }
