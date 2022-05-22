@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ApiError, ApiResponse, CreateRoomDto, Room } from 'digiroom-types';
+import { ApiResponse, CreateRoomDto, Room } from 'digiroom-types';
 import { axios } from 'utils/axios.util';
 
 export interface RoomState {

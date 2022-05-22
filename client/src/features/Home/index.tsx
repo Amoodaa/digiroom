@@ -17,8 +17,6 @@ export const Home = () => {
     setOpen(true);
   };
 
-  console.log(youtubeUrl);
-
   return (
     <>
       <Header />
