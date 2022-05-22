@@ -9,3 +9,5 @@ A watch-together focused on youtube courses, but you can watch any youtube video
 - run `yarn` in root
 - run `yarn refresh:types`, `yarn dev:client`, `yarn dev:server`, in seperate terminal windows
 - Enjoy?
+
+ask for default env..
