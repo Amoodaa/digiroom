@@ -1,5 +1,5 @@
 runtime: nodejs16
-service: react-app
+service: default
 
 automatic_scaling:
   max_instances: 1
