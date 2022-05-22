@@ -42,9 +42,7 @@ jobs:
         env:
           NODE_ENV: production
           DB_URL: ${{ secrets.DB_URL }}
-          ORIGIN: ${{ secrets.APP_ORIGIN }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          CREDENTIALS: true
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
 
       - name: Deploy Server app to server service

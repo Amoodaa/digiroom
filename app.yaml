@@ -12,7 +12,7 @@ network:
 env_variables:
   NODE_ENV: $NODE_ENV
   DB_URL: $DB_URL
-  ORIGIN: $ORIGIN
+  ORIGIN: https://digiroom-349611.ey.r.appspot.com
   SECRET_KEY: $SECRET_KEY
-  CREDENTIALS: $CREDENTIALS
+  CREDENTIALS: true
   YOUTUBE_API_KEY: $YOUTUBE_API_KEY
