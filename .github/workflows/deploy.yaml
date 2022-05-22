@@ -1,0 +1,51 @@
+name: Deploy to GCP App engines
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build_deploy_client:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "client"
+
+    steps:
+      - uses: "actions/checkout@v3"
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn build
+
+      - uses: ikuanyshbekov/app-yaml-env-compiler@v1.0
+        env:
+          NODE_ENV: production
+          DB_URL: ${{ secrets.DB_URL }}
+          ORIGIN: ${{ secrets.APP_ORIGIN }}
+          CREDENTIALS: true
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
+
+      - id: "deploy_server"
+        uses: "google-github-actions/deploy-appengine@v0"
+        with:
+          deliverables: "server/app.yaml"
+          promote: true
+          version: ${{ github.sha }}
+
+      - id: "deploy_client"
+        uses: "google-github-actions/deploy-appengine@v0"
+        with:
+          deliverables: "client/app.yaml"
+          promote: true
+          version: ${{ github.sha }}
