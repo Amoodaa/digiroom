@@ -30,14 +30,7 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
       } as VideoInfo,
       format: 'long',
     });
-    console.log(
-      {
-        id,
-        mediaType,
-        provider: 'youtube',
-      },
-      url,
-    );
+
     if (url) {
       onYoutubeClick(url);
     }
