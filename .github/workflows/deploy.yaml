@@ -27,6 +27,13 @@ jobs:
         with:
           credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
 
+      - id: "deploy_client"
+        uses: "google-github-actions/deploy-appengine@v0"
+        with:
+          deliverables: "client/app.yaml"
+          promote: true
+          version: ${{ github.sha }}
+
       - uses: ikuanyshbekov/app-yaml-env-compiler@v1.0
         env:
           NODE_ENV: production
@@ -40,12 +47,5 @@ jobs:
         uses: "google-github-actions/deploy-appengine@v0"
         with:
           deliverables: "app.yaml"
-          promote: true
-          version: ${{ github.sha }}
-
-      - id: "deploy_client"
-        uses: "google-github-actions/deploy-appengine@v0"
-        with:
-          deliverables: "client/app.yaml"
           promote: true
           version: ${{ github.sha }}
