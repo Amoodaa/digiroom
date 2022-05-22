@@ -30,7 +30,7 @@ jobs:
         with:
           credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
 
-      - uses: golang-enthusiast/app-yaml-env-compiler@v1.0
+      - uses: golang-enthusiast/app-yaml-env-compiler@latest
         env:
           NODE_ENV: production
           DB_URL: ${{ secrets.DB_URL }}
