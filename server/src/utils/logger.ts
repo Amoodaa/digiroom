@@ -7,7 +7,7 @@ import { LOG_DIR, NODE_ENV } from '@config';
 const readOnly = NODE_ENV === 'production';
 
 // logs dir
-const logDir: string = join(__dirname, '..', LOG_DIR);
+const logDir: string = !readOnly ? join(__dirname, '..', LOG_DIR) : '';
 
 if (!existsSync(logDir) && !readOnly) {
   mkdirSync(logDir);
