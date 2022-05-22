@@ -28,7 +28,6 @@ jobs:
           credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
 
       - uses: ikuanyshbekov/app-yaml-env-compiler@v1.0
-        working-directory: "server"
         env:
           NODE_ENV: production
           DB_URL: ${{ secrets.DB_URL }}
@@ -40,7 +39,7 @@ jobs:
       - id: "deploy_server"
         uses: "google-github-actions/deploy-appengine@v0"
         with:
-          deliverables: "server/app.yaml"
+          deliverables: "app.yaml"
           promote: true
           version: ${{ github.sha }}
 
