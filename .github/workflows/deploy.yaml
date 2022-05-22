@@ -1,7 +1,7 @@
 name: Deploy to GCP App engines
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -47,7 +47,7 @@ jobs:
           CREDENTIALS: true
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
 
-      - id: "deploy_server"
+      - name: Deploy Server app to server service
         uses: "google-github-actions/deploy-appengine@v0"
         with:
           deliverables: "app.yaml"
