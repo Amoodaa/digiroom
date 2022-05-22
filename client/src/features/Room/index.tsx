@@ -16,6 +16,7 @@ import { Header } from '../../components/Header';
 import { ChatMessage as IChatMessage, exampleChat } from './data';
 import { roomActions } from 'slices/room/slice';
 import { Button } from '@mui/material';
+import { Room } from 'digiroom-types';
 
 export const ChatMessage: FC<{ chatItem: IChatMessage }> = ({ chatItem }) => (
   <Typography>
@@ -25,7 +26,7 @@ export const ChatMessage: FC<{ chatItem: IChatMessage }> = ({ chatItem }) => (
   </Typography>
 );
 
-export const Room = () => {
+export const RoomPage = () => {
   const dispatch = useAppDispatch();
   const { roomId = '' } = useParams<{ roomId: string }>();
   const { roomConnection } = useConnect({ roomId });
@@ -59,17 +60,26 @@ export const Room = () => {
     resumePlaying();
   }, [resumePlaying, roomConnection]);
 
+  const changeVideo = useCallback((room: Room) => dispatch(roomActions.changeCurrentVideo(room)), [dispatch]);
+
+  const onNextClick = useCallback(() => {
+    if (!room) return;
+    const currentVideoIndex = room?.currentPlaylistItems.items.findIndex(e => e.contentDetails.videoId === room.currentVideoId);
+    roomConnection.emit('change-video', roomId, room.currentPlaylistItems.items[currentVideoIndex + 1].contentDetails.videoId);
+  }, [room, roomConnection, roomId]);
+
   useEffect(() => {
     if (!roomConnection.connected) return;
 
     roomConnection.on('resume-room', resumePlaying);
     roomConnection.on('pause-room', pausePlaying);
-
+    roomConnection.on('changed-video', changeVideo);
     return () => {
-      roomConnection.removeListener('resume-room', resumePlaying);
-      roomConnection.removeListener('pause-room', pausePlaying);
+      roomConnection.off('resume-room', resumePlaying);
+      roomConnection.off('pause-room', pausePlaying);
+      roomConnection.off('changed-video', changeVideo);
     };
-  }, [roomConnection.connected, roomConnection, roomId, pausePlaying, resumePlaying]);
+  }, [roomConnection.connected, roomConnection, roomId, pausePlaying, resumePlaying, changeVideo]);
 
   return (
     <>
@@ -102,6 +112,7 @@ export const Room = () => {
           </Paper>
         </Box>
         <Button onClick={playing ? onPauseClick : onPlayClick}>{playing ? 'Pause' : 'Play'}</Button>
+        <Button onClick={onNextClick}>{'Next Song'}</Button>
         <h1>{playing + ''}</h1>
         <pre>{JSON.stringify(room, null, 2)}</pre>
       </Container>

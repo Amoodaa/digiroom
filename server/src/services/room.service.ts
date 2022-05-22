@@ -67,6 +67,26 @@ export class RoomService {
     return createRoomData;
   }
 
+  // TODO:
+  // public async addUserToRoom(roomId: string, userId: string): Promise<Room> {
+  //   const foundRoom = await RoomModel.findByIdAndUpdate(roomId);
+
+  //   if (!foundRoom) throw new HttpError(404, "You're not room");
+
+  //   return foundRoom;
+  // }
+
+  public async changeCurrentVideo(name: string, videoId: string): Promise<Room> {
+    const foundRoom = await RoomModel.findOne({ name }).lean();
+
+    if (!foundRoom) throw new HttpError(404, "You're not room");
+
+    foundRoom.currentVideoId = videoId;
+    foundRoom.currentVideo = await youtubeClient.videos.get(foundRoom.currentVideoId);
+
+    return foundRoom;
+  }
+
   public async updateRoom(roomId: string, roomData: CreateRoomDto): Promise<Room> {
     if (isEmpty(roomData)) throw new HttpError(400, "You're not roomData");
 

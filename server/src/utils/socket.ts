@@ -2,9 +2,10 @@ import { Server as SocketServer } from 'socket.io';
 import { SocketEventsMap } from 'digiroom-types';
 import { CREDENTIALS, ORIGIN } from '@/config';
 import { Server } from 'http';
+import { RoomService } from '@/services/room.service';
 
 export let io: SocketServer<SocketEventsMap> = null;
-
+const roomService = new RoomService();
 export const initializeSocketIOServer = (httpServer: Server) => {
   io = new SocketServer<SocketEventsMap>(httpServer, {
     cors: {
@@ -20,10 +21,16 @@ export const initializeSocketIOServer = (httpServer: Server) => {
       socket.join(roomId);
 
       socket.on('pause-room', () => {
-        socket.to(roomId).emit('pause-room');
+        youtubeTopic.to(roomId).emit('pause-room');
       });
+
       socket.on('resume-room', () => {
-        socket.to(roomId).emit('resume-room');
+        youtubeTopic.to(roomId).emit('resume-room');
+      });
+
+      socket.on('change-video', async (roomId, videoId) => {
+        const room = await roomService.changeCurrentVideo(roomId, videoId);
+        youtubeTopic.to(roomId).emit('changed-video', room);
       });
     });
 
@@ -31,6 +38,7 @@ export const initializeSocketIOServer = (httpServer: Server) => {
       socket.leave(roomId);
       socket.removeAllListeners('pause-room');
       socket.removeAllListeners('resume-room');
+      socket.removeAllListeners('change-video');
     });
   });
 };

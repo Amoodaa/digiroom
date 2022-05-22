@@ -8,7 +8,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Snackbars } from 'components/Snackbar';
 import { Home } from 'features/Home';
-import { Room } from 'features/Room';
+import { RoomPage } from 'features/Room';
 import { SnackbarProvider } from 'notistack';
 import { Route, Routes } from 'react-router';
 
@@ -30,7 +30,7 @@ export default function App() {
       <CssBaseline />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/:roomId" element={<Room />} />
+        <Route path="/:roomId" element={<RoomPage />} />
       </Routes>
     </ThemeProvider>
   );
