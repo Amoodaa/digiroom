@@ -4,7 +4,7 @@ import { baseConfig } from 'baseConfig';
 import { io, Socket } from 'socket.io-client';
 import { SocketEventsMap } from 'digiroom-types';
 
-const socket: Socket<SocketEventsMap> = io(`${baseConfig.API_URL}/youtube`, { transports: ['websocket'] });
+const socket: Socket<SocketEventsMap> = io(`${baseConfig.API_URL}/youtube`);
 socket.connect();
 
 export const useConnect = ({ roomName }: { roomName: string }) => {
