@@ -6,11 +6,8 @@ on:
       - main
 
 jobs:
-  build_deploy_client:
+  build_deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: "client"
 
     steps:
       - uses: "actions/checkout@v3"
@@ -22,19 +19,23 @@ jobs:
       - run: yarn install --frozen-lockfile
 
       - run: yarn build
-
-      - uses: ikuanyshbekov/app-yaml-env-compiler@v1.0
         env:
-          NODE_ENV: production
-          DB_URL: ${{ secrets.DB_URL }}
-          ORIGIN: ${{ secrets.APP_ORIGIN }}
-          CREDENTIALS: true
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
       - id: "auth"
         uses: "google-github-actions/auth@v0"
         with:
           credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
+
+      - uses: ikuanyshbekov/app-yaml-env-compiler@v1.0
+        working-directory: "server"
+        env:
+          NODE_ENV: production
+          DB_URL: ${{ secrets.DB_URL }}
+          ORIGIN: ${{ secrets.APP_ORIGIN }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          CREDENTIALS: true
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
 
       - id: "deploy_server"
         uses: "google-github-actions/deploy-appengine@v0"
