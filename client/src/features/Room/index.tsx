@@ -161,14 +161,7 @@ export const RoomPage = () => {
         <Button onClick={onNextClick}>{'Next Song'}</Button>
         <Button onClick={() => setMuted(!muted)}>{muted ? 'unmute' : 'mute'}</Button>
         <Button onClick={() => onSeek(1)}>{'Seek to 00:01'}</Button>
-        <LinearProgress
-          onClick={e => {
-            console.log(e);
-          }}
-          variant="buffer"
-          value={progressValue}
-          valueBuffer={bufferValue}
-        />
+        <LinearProgress variant="buffer" value={progressValue} valueBuffer={bufferValue} />
         <h1>{playing + ''}</h1>
         <pre>{JSON.stringify(room, null, 2)}</pre>
       </Container>
