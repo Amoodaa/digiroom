@@ -3,7 +3,7 @@ name: Deploy to GCP App engines
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build_deploy_client:
