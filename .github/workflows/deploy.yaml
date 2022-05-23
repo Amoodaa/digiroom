@@ -18,7 +18,7 @@ jobs:
 
       - run: yarn install --frozen-lockfile
 
-      - run: yarn build
+      - run: yarn build:client
         env:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
@@ -38,21 +38,27 @@ jobs:
           promote: true
           version: ${{ github.sha }}
 
-      - name: Make .env.production.local
-        uses: SpicyPizza/create-envfile@v1.3
+      - uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          envkey_DB_URL: ${{ secrets.DB_URL }}
-          envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          envkey_ORIGIN: ${{ secrets.APP_ORIGIN }}
-          envkey_CREDENTIALS: true
-          envkey_YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
-          directory: server
-          file_name: .env.production.local
-          fail_on_empty: false
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "digiroom-a"
+          heroku_email: "amoodaa@gmail.com"
 
-      - name: Deploy Server app to server service
-        uses: "google-github-actions/deploy-appengine@v0"
-        with:
-          deliverables: "app.yaml"
-          promote: true
-          version: ${{ github.sha }}
+      # - name: Make .env.production.local
+      #   uses: SpicyPizza/create-envfile@v1.3
+      #   with:
+      #     envkey_DB_URL: ${{ secrets.DB_URL }}
+      #     envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      #     envkey_ORIGIN: ${{ secrets.APP_ORIGIN }}
+      #     envkey_CREDENTIALS: true
+      #     envkey_YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      #     directory: server
+      #     file_name: .env.production.local
+      #     fail_on_empty: false
+
+      # - name: Deploy Server app to server service
+      #   uses: "google-github-actions/deploy-appengine@v0"
+      #   with:
+      #     deliverables: "app.yaml"
+      #     promote: true
+      #     version: ${{ github.sha }}
