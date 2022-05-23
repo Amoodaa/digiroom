@@ -1,10 +1,11 @@
-runtime: nodejs16
-service: server
-instance_class: B1
+runtime: nodejs
+env: flex
 
-basic_scaling:
-  max_instances: 1
-  idle_timeout: 10m
+# Use only a single instance, so that this local-memory-only chat app will work
+# consistently with multiple users. To work across multiple instances, an
+# extra-instance messaging system or data store would be needed.
+manual_scaling:
+  instances: 1
 
 network:
   session_affinity: true
