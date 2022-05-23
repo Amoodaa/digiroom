@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build:client": "yarn refresh:types && cd client && yarn build",
-    "build": "yarn refresh:types && cd ../server && yarn build",
+    "build": "yarn refresh:types && cd server && yarn build",
     "start": "cd server && yarn start",
     "dev:client": "cd client && yarn dev",
     "dev:server": "cd server && yarn dev",
