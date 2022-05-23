@@ -1,5 +1,6 @@
 runtime: nodejs
 env: flex
+service: server
 
 # Use only a single instance, so that this local-memory-only chat app will work
 # consistently with multiple users. To work across multiple instances, an
