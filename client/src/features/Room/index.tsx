@@ -68,13 +68,16 @@ export const RoomPage = () => {
     resumePlaying();
   }, [resumePlaying, roomConnection]);
 
-  const changeVideo = useCallback((room: Room) => dispatch(roomActions.changeCurrentVideo(room)), [dispatch]);
+  const changedVideoEvent = useCallback((room: Room) => dispatch(roomActions.changeCurrentVideo(room)), [dispatch]);
+
+  const changeVideo = useCallback((videoId: string) => roomConnection.emit('change-video', roomName, videoId), [roomConnection, roomName]);
 
   const onNextClick = useCallback(() => {
     if (!room) return;
     const currentVideoIndex = room.currentPlaylistItems.items.findIndex(e => e.contentDetails.videoId === room.currentVideoId);
-    roomConnection.emit('change-video', roomName, room.currentPlaylistItems.items[currentVideoIndex + 1].contentDetails.videoId);
-  }, [room, roomConnection, roomName]);
+    const videoId = room.currentPlaylistItems.items[currentVideoIndex + 1].contentDetails.videoId;
+    changeVideo(videoId);
+  }, [changeVideo, room]);
 
   const seekVideo = useCallback((timeInSeconds: number) => youtubePlayer.current?.seekTo(timeInSeconds, 'seconds'), []);
 
@@ -96,7 +99,7 @@ export const RoomPage = () => {
 
     roomConnection.on('resume-room', resumePlaying);
     roomConnection.on('pause-room', pausePlaying);
-    roomConnection.on('changed-video', changeVideo);
+    roomConnection.on('changed-video', changedVideoEvent);
     roomConnection.on('seek-video', seekVideo);
     roomConnection.on('request-room-player-data', roomInitRequest);
     roomConnection.on('share-room-player-data', roomInit);
@@ -104,12 +107,12 @@ export const RoomPage = () => {
     return () => {
       roomConnection.off('resume-room', resumePlaying);
       roomConnection.off('pause-room', pausePlaying);
-      roomConnection.off('changed-video', changeVideo);
+      roomConnection.off('changed-video', changedVideoEvent);
       roomConnection.off('seek-video', seekVideo);
       roomConnection.off('request-room-player-data', roomInitRequest);
       roomConnection.off('share-room-player-data', roomInit);
     };
-  }, [roomConnection.connected, roomConnection, roomName, pausePlaying, resumePlaying, changeVideo, seekVideo]);
+  }, [roomConnection.connected, roomConnection, roomName, pausePlaying, resumePlaying, changedVideoEvent, seekVideo]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -123,6 +126,8 @@ export const RoomPage = () => {
       clearInterval(timer);
     };
   }, []);
+
+  if (!room) return null;
 
   const progressValue = (currentTime / (youtubePlayer.current?.getDuration() ?? 1)) * 100;
   const bufferValue = (currentTime / (youtubePlayer.current?.getDuration() ?? 1)) * 100;
@@ -162,8 +167,14 @@ export const RoomPage = () => {
         <Button onClick={() => setMuted(!muted)}>{muted ? 'unmute' : 'mute'}</Button>
         <Button onClick={() => onSeek(1)}>{'Seek to 00:01'}</Button>
         <LinearProgress variant="buffer" value={progressValue} valueBuffer={bufferValue} />
-        <h1>{playing + ''}</h1>
-        <pre>{JSON.stringify(room, null, 2)}</pre>
+        {room.currentPlaylistItems.items.map(e => {
+          return (
+            <ul>
+              <li>{e.snippet.title}</li>
+              <Button onClick={() => changeVideo(e.contentDetails.videoId)}>Change Video</Button>
+            </ul>
+          );
+        })}
       </Container>
     </>
   );

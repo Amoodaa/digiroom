@@ -11,25 +11,25 @@ export const exampleChat: ChatMessage[] = [
   {
     type: 'chat',
     content: 'I didnt understand that part',
-    senderName: 'Sami',
+    senderName: 'Kresto',
     at: new Date(),
   },
   {
     type: 'chat',
     content: 'Lemme explain',
-    senderName: 'Awni',
+    senderName: 'Mighty',
     at: new Date(),
   },
   {
     type: 'action',
     content: 'drawing on the whiteboard',
-    senderName: 'Awni',
+    senderName: 'Sinn',
     at: new Date(),
   },
   {
     type: 'chat',
     content: 'I see now',
-    senderName: 'Sami',
+    senderName: 'Kresto',
     at: new Date(),
   },
 ];
