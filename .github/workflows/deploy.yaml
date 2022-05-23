@@ -30,6 +30,14 @@ jobs:
         with:
           credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
 
+      - name: Deploy client app to default service
+        uses: "google-github-actions/deploy-appengine@v0"
+        with:
+          working_directory: client/build
+          deliverables: app.yaml
+          promote: true
+          version: ${{ github.sha }}
+
       - name: Make .env.production.local
         uses: SpicyPizza/create-envfile@v1.3
         with:
@@ -46,13 +54,5 @@ jobs:
         uses: "google-github-actions/deploy-appengine@v0"
         with:
           deliverables: "app.yaml"
-          promote: true
-          version: ${{ github.sha }}
-
-      - name: Deploy client app to default service
-        uses: "google-github-actions/deploy-appengine@v0"
-        with:
-          working_directory: client/build
-          deliverables: app.yaml
           promote: true
           version: ${{ github.sha }}
