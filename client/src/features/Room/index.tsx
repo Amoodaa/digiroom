@@ -19,6 +19,8 @@ import { Button } from '@mui/material';
 import { Room } from 'digiroom-types';
 import { PlayerState } from 'digiroom-types/PlayerState';
 import LinearProgress from '@mui/material/LinearProgress';
+import { Controls } from './Controls';
+import { parse, toSeconds } from 'iso8601-duration';
 
 export const ChatMessage: FC<{ chatItem: IChatMessage }> = ({ chatItem }) => (
   <Typography>
@@ -36,7 +38,7 @@ export const RoomPage = () => {
   const room = useAppSelector(s => s.room.room);
   const [playing, setPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
-  const [muted, setMuted] = useState(true);
+  const [volume, setVolume] = useState(30);
   const currentVideoId = useAppSelector(s => s.room.room?.currentVideoId) ?? '';
   const currentVideoUrl = urlParser.create({
     videoInfo: {
@@ -53,6 +55,7 @@ export const RoomPage = () => {
   const roomInit = () => {
     roomConnection.emit('request-room-player-data');
   };
+  const onVolumeChange = useCallback((volume: number) => setVolume(volume), []);
 
   const pausePlaying = useCallback(() => setPlaying(false), []);
 
@@ -118,7 +121,6 @@ export const RoomPage = () => {
     const timer = setInterval(() => {
       if (youtubePlayer.current) {
         setCurrentTime(youtubePlayer.current.getCurrentTime());
-        setCurrentTime(youtubePlayer.current.getSecondsLoaded());
       }
     }, 500);
 
@@ -127,17 +129,18 @@ export const RoomPage = () => {
     };
   }, []);
 
-  if (!room) return null;
+  // useEffect(() => {
+  //   youtubePlayer.current?.getInternalPlayer().setVolume(volume);
+  // }, [volume]);
 
-  const progressValue = (currentTime / (youtubePlayer.current?.getDuration() ?? 1)) * 100;
-  const bufferValue = (currentTime / (youtubePlayer.current?.getDuration() ?? 1)) * 100;
+  if (!room) return null;
 
   return (
     <>
       <Header roomName={roomName} />
-      <Container maxWidth="xl" sx={{ p: 2 }}>
-        <Box maxWidth="50%" sx={{ p: 2 }}>
-          <ReactPlayer url={currentVideoUrl} onReady={roomInit} ref={youtubePlayer} playing={playing} muted={muted} config={{}} />
+      <Container maxWidth="xl" sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
+        <Box maxWidth="45%" sx={{ p: 2 }}>
+          <ReactPlayer url={currentVideoUrl} onReady={roomInit} ref={youtubePlayer} playing={playing} volume={volume} />
           <Divider sx={{ my: 2 }} />
           <Paper variant="outlined">
             <Box display="flex" flexDirection="column" justifyContent="flex-end" height="40vh" p={2}>
@@ -161,20 +164,27 @@ export const RoomPage = () => {
               />
             </Box>
           </Paper>
+          <Button onClick={onNextClick}>{'Next Song'}</Button>
+          <Button onClick={() => onSeek(1)}>{'Seek to 00:01'}</Button>
         </Box>
-        <Button onClick={playing ? onPauseClick : onPlayClick}>{playing ? 'Pause' : 'Play'}</Button>
-        <Button onClick={onNextClick}>{'Next Song'}</Button>
-        <Button onClick={() => setMuted(!muted)}>{muted ? 'unmute' : 'mute'}</Button>
-        <Button onClick={() => onSeek(1)}>{'Seek to 00:01'}</Button>
-        <LinearProgress variant="buffer" value={progressValue} valueBuffer={bufferValue} />
-        {room.currentPlaylistItems.items.map(e => {
-          return (
-            <ul>
-              <li>{e.snippet.title}</li>
-              <Button onClick={() => changeVideo(e.contentDetails.videoId)}>Change Video</Button>
-            </ul>
-          );
-        })}
+        <Box display="flex" justifyContent="space-between" alignItems="center" flexDirection="column" width="50%">
+          <Controls
+            playing={playing}
+            onPlayClick={playing ? onPauseClick : onPlayClick}
+            volume={volume}
+            onVolumeChange={onVolumeChange}
+            currentTime={Math.round(currentTime)}
+            duration={toSeconds(parse(room.currentVideo.contentDetails.duration))}
+          />
+          {room.currentPlaylistItems.items.map(e => {
+            return (
+              <Box display="flex" justifyContent="space-between" alignItems="center" width="100%" key={e.id}>
+                <Typography>{e.snippet.title}</Typography>
+                <Button onClick={() => changeVideo(e.contentDetails.videoId)}>Change Video</Button>
+              </Box>
+            );
+          })}
+        </Box>
       </Container>
     </>
   );

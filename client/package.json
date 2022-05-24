@@ -20,6 +20,7 @@
     "@types/youtube": "^0.0.46",
     "axios": "^0.27.2",
     "digiroom-types": "*",
+    "iso8601-duration": "^2.1.1",
     "js-video-url-parser": "^0.5.1",
     "notistack": "^2.0.4",
     "react": "^18.0.0",
