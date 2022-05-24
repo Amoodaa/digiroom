@@ -18,7 +18,6 @@ import { roomActions } from 'slices/room/slice';
 import { Button } from '@mui/material';
 import { Room } from 'digiroom-types';
 import { PlayerState } from 'digiroom-types/PlayerState';
-import LinearProgress from '@mui/material/LinearProgress';
 import { Controls } from './Controls';
 import { parse, toSeconds } from 'iso8601-duration';
 
