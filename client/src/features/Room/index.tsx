@@ -222,6 +222,7 @@ export const RoomPage = () => {
           <Box
             sx={{
               height: '20vh',
+              width: '90%',
             }}
           >
             <Controls
@@ -238,7 +239,12 @@ export const RoomPage = () => {
               onPrevClick={onPrevClick}
             />
           </Box>
-          <Accordion defaultExpanded>
+          <Accordion
+            defaultExpanded
+            sx={{
+              width: '100%',
+            }}
+          >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
@@ -248,6 +254,7 @@ export const RoomPage = () => {
             </AccordionSummary>
             <AccordionDetails
               sx={{
+                width: '100%',
                 maxHeight: '50vh',
                 overflow: 'scroll',
               }}
@@ -274,7 +281,12 @@ export const RoomPage = () => {
               </Box>
             </AccordionDetails>
           </Accordion>
-          <Accordion defaultExpanded>
+          <Accordion
+            defaultExpanded
+            sx={{
+              width: '100%',
+            }}
+          >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel2a-content"
@@ -284,7 +296,7 @@ export const RoomPage = () => {
             </AccordionSummary>
             <AccordionDetails
               sx={{
-                maxHeight: '30vh',
+                maxHeight: '25vh',
                 overflow: 'scroll',
               }}
             >
@@ -293,7 +305,6 @@ export const RoomPage = () => {
                   display="flex"
                   flexDirection="column"
                   justifyContent="flex-end"
-                  height="40vh"
                   p={2}
                 >
                   <Box mb={3}>
