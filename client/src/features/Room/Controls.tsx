@@ -11,17 +11,18 @@ import FastForwardRounded from '@mui/icons-material/FastForwardRounded';
 import FastRewindRounded from '@mui/icons-material/FastRewindRounded';
 import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
 import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
+import CloudSyncIcon from '@mui/icons-material/CloudSync';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import { Room } from 'digiroom-types';
 
 const Widget = styled('div')(({ theme }) => ({
-  padding: 16,
   borderRadius: 16,
-  width: 800,
+  minWidth: 450,
   maxWidth: '100%',
   margin: 'auto',
-  position: 'relative',
   zIndex: 1,
-  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.4)',
-  backdropFilter: 'blur(40px)',
+  backgroundColor:
+    theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.4)',
 }));
 
 const TinyText = styled(Typography)({
@@ -32,33 +33,54 @@ const TinyText = styled(Typography)({
 });
 
 type Props = {
+  currentVideo: Room['currentVideo'];
   currentTime: number;
   playing: boolean;
-  onPlayClick: () => void;
-  onVolumeChange: (value: number) => void;
   duration: number;
   volume: number;
+  onPlayClick: () => void;
+  onVolumeChange: (value: number) => void;
+  onSeek: (value: number) => void;
+  onNextClick: () => void;
+  onPrevClick: () => void;
+  onSyncClick: () => void;
 };
 
-export const Controls: React.FC<Props> = ({ currentTime, playing, onPlayClick, volume, onVolumeChange, duration }) => {
+function formatDuration(value: number) {
+  const minute = Math.floor(value / 60);
+  const secondLeft = value - minute * 60;
+  return `${minute}:${secondLeft < 9 ? `0${secondLeft}` : secondLeft}`;
+}
+
+export const Controls: React.FC<Props> = ({
+  currentVideo,
+  currentTime,
+  playing,
+  onPlayClick,
+  volume,
+  onVolumeChange,
+  duration,
+  onSeek,
+  onNextClick,
+  onPrevClick,
+  onSyncClick,
+}) => {
   const theme = useTheme();
-  function formatDuration(value: number) {
-    const minute = Math.floor(value / 60);
-    const secondLeft = value - minute * 60;
-    return `${minute}:${secondLeft < 9 ? `0${secondLeft}` : secondLeft}`;
-  }
-  const lightIconColor = theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
+
+  const lightIconColor =
+    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
   const mainIconColor = theme.palette.mode === 'dark' ? '#fffffff0' : 'rgba(0,0,0,0.4)';
+
   return (
     <Box sx={{ width: '100%', overflow: 'hidden' }}>
       <Widget>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ ml: 1.5, minWidth: 0 }}>
             <Typography variant="caption" color="text.secondary" fontWeight={500}>
-              Jun Pulse
+              {currentVideo.snippet.channelTitle}
             </Typography>
             <Typography noWrap>
-              <b>คนเก่าเขาทำไว้ดี (Can&apos;t win)</b>
+              <b>{currentVideo.snippet.title}</b>
             </Typography>
           </Box>
         </Box>
@@ -69,7 +91,7 @@ export const Controls: React.FC<Props> = ({ currentTime, playing, onPlayClick, v
           min={0}
           step={1}
           max={duration}
-          // onChange={(_, value) => setPosition(Array.isArray(value) ? value[0] : value)}
+          onChange={(_, value) => onSeek(Array.isArray(value) ? value[0] : value)}
           sx={{
             color: theme.palette.mode === 'dark' ? '#fff' : 'rgba(0,0,0,0.87)',
             height: 4,
@@ -81,7 +103,11 @@ export const Controls: React.FC<Props> = ({ currentTime, playing, onPlayClick, v
                 boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
               },
               '&:hover, &.Mui-focusVisible': {
-                boxShadow: `0px 0px 0px 8px ${theme.palette.mode === 'dark' ? 'rgb(255 255 255 / 16%)' : 'rgb(0 0 0 / 16%)'}`,
+                boxShadow: `0px 0px 0px 8px ${
+                  theme.palette.mode === 'dark'
+                    ? 'rgb(255 255 255 / 16%)'
+                    : 'rgb(0 0 0 / 16%)'
+                }`,
               },
               '&.Mui-active': {
                 width: 20,
@@ -112,7 +138,10 @@ export const Controls: React.FC<Props> = ({ currentTime, playing, onPlayClick, v
             mt: -1,
           }}
         >
-          <IconButton aria-label="previous song">
+          <IconButton aria-label="mute video">
+            <VolumeOffIcon fontSize="large" htmlColor={mainIconColor} />
+          </IconButton>
+          <IconButton aria-label="previous song" onClick={onPrevClick}>
             <FastRewindRounded fontSize="large" htmlColor={mainIconColor} />
           </IconButton>
           <IconButton aria-label={playing ? 'play' : 'pause'} onClick={onPlayClick}>
@@ -122,8 +151,11 @@ export const Controls: React.FC<Props> = ({ currentTime, playing, onPlayClick, v
               <PlayArrowRounded sx={{ fontSize: '3rem' }} htmlColor={mainIconColor} />
             )}
           </IconButton>
-          <IconButton aria-label="next song">
+          <IconButton aria-label="next song" onClick={onNextClick}>
             <FastForwardRounded fontSize="large" htmlColor={mainIconColor} />
+          </IconButton>
+          <IconButton aria-label="sync" onClick={onSyncClick}>
+            <CloudSyncIcon fontSize="large" htmlColor={mainIconColor} />
           </IconButton>
         </Box>
         <Stack spacing={2} direction="row" sx={{ mb: 1, px: 1 }} alignItems="center">

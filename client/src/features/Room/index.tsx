@@ -11,11 +11,15 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import { useParams } from 'react-router';
 import urlParser from 'js-video-url-parser';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { Header } from '../../components/Header';
 import { ChatMessage as IChatMessage, exampleChat } from './data';
 import { roomActions } from 'slices/room/slice';
-import { Button } from '@mui/material';
+import { Breakpoint, Button } from '@mui/material';
 import { Room } from 'digiroom-types';
 import { PlayerState } from 'digiroom-types/PlayerState';
 import { Controls } from './Controls';
@@ -37,7 +41,6 @@ export const RoomPage = () => {
   const room = useAppSelector(s => s.room.room);
   const [playing, setPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
-  const [volume, setVolume] = useState(30);
   const currentVideoId = useAppSelector(s => s.room.room?.currentVideoId) ?? '';
   const currentVideoUrl = urlParser.create({
     videoInfo: {
@@ -51,10 +54,17 @@ export const RoomPage = () => {
     dispatch(roomActions.getRoom({ roomName }));
   }, [dispatch, roomName]);
 
-  const roomInit = () => {
+  const roomSync = () => {
     roomConnection.emit('request-room-player-data');
   };
+
+  const [volume, setVolume] = useState(0);
+
   const onVolumeChange = useCallback((volume: number) => setVolume(volume), []);
+
+  useEffect(() => {
+    youtubePlayer.current?.getInternalPlayer()?.setVolume?.(volume);
+  }, [volume]);
 
   const pausePlaying = useCallback(() => setPlaying(false), []);
 
@@ -70,18 +80,52 @@ export const RoomPage = () => {
     resumePlaying();
   }, [resumePlaying, roomConnection]);
 
-  const changedVideoEvent = useCallback((room: Room) => dispatch(roomActions.changeCurrentVideo(room)), [dispatch]);
+  const changedVideoEvent = useCallback(
+    (room: Room) => dispatch(roomActions.changeCurrentVideo(room)),
+    [dispatch],
+  );
 
-  const changeVideo = useCallback((videoId: string) => roomConnection.emit('change-video', roomName, videoId), [roomConnection, roomName]);
+  const changeVideo = useCallback(
+    (videoId: string) => roomConnection.emit('change-video', roomName, videoId),
+    [roomConnection, roomName],
+  );
+
+  const onPrevClick = useCallback(() => {
+    if (!room) return;
+    const currentVideoIndex = room.currentPlaylistItems.items.findIndex(
+      e => e.contentDetails.videoId === room.currentVideoId,
+    );
+    // if first item in array, then dont do it
+    const prevVideoIndex = currentVideoIndex - 1 >= 0 ? currentVideoIndex - 1 : 0;
+    const videoId =
+      room.currentPlaylistItems.items[prevVideoIndex].contentDetails.videoId;
+    if (videoId !== currentVideoId) {
+      changeVideo(videoId);
+    }
+  }, [changeVideo, currentVideoId, room]);
 
   const onNextClick = useCallback(() => {
     if (!room) return;
-    const currentVideoIndex = room.currentPlaylistItems.items.findIndex(e => e.contentDetails.videoId === room.currentVideoId);
-    const videoId = room.currentPlaylistItems.items[currentVideoIndex + 1].contentDetails.videoId;
-    changeVideo(videoId);
-  }, [changeVideo, room]);
+    const currentVideoIndex = room.currentPlaylistItems.items.findIndex(
+      e => e.contentDetails.videoId === room.currentVideoId,
+    );
+    const nextVideoIndex =
+      // if last item in array, then dont do it
+      currentVideoIndex + 1 < room.currentPlaylistItems.items.length
+        ? currentVideoIndex + 1
+        : room.currentPlaylistItems.items.length;
+    const videoId =
+      room.currentPlaylistItems.items[nextVideoIndex].contentDetails.videoId;
 
-  const seekVideo = useCallback((timeInSeconds: number) => youtubePlayer.current?.seekTo(timeInSeconds, 'seconds'), []);
+    if (videoId !== currentVideoId) {
+      changeVideo(videoId);
+    }
+  }, [changeVideo, currentVideoId, room]);
+
+  const seekVideo = useCallback(
+    (timeInSeconds: number) => youtubePlayer.current?.seekTo(timeInSeconds, 'seconds'),
+    [],
+  );
 
   const onSeek = useCallback(
     (seekTo: number) => {
@@ -91,11 +135,13 @@ export const RoomPage = () => {
   );
 
   useEffect(() => {
-    const roomInitRequest = () => {
-      roomConnection.emit('share-room-player-data', { currentTime: youtubePlayer.current?.getCurrentTime() ?? 0 });
+    const shareRoomState = () => {
+      roomConnection.emit('share-room-player-data', {
+        currentTime: youtubePlayer.current?.getCurrentTime() ?? 0,
+      });
     };
 
-    const roomInit = ({ currentTime }: PlayerState) => {
+    const processRoomState = ({ currentTime }: PlayerState) => {
       seekVideo(currentTime);
     };
 
@@ -103,18 +149,26 @@ export const RoomPage = () => {
     roomConnection.on('pause-room', pausePlaying);
     roomConnection.on('changed-video', changedVideoEvent);
     roomConnection.on('seek-video', seekVideo);
-    roomConnection.on('request-room-player-data', roomInitRequest);
-    roomConnection.on('share-room-player-data', roomInit);
+    roomConnection.on('request-room-player-data', shareRoomState);
+    roomConnection.on('share-room-player-data', processRoomState);
 
     return () => {
       roomConnection.off('resume-room', resumePlaying);
       roomConnection.off('pause-room', pausePlaying);
       roomConnection.off('changed-video', changedVideoEvent);
       roomConnection.off('seek-video', seekVideo);
-      roomConnection.off('request-room-player-data', roomInitRequest);
-      roomConnection.off('share-room-player-data', roomInit);
+      roomConnection.off('request-room-player-data', shareRoomState);
+      roomConnection.off('share-room-player-data', processRoomState);
     };
-  }, [roomConnection.connected, roomConnection, roomName, pausePlaying, resumePlaying, changedVideoEvent, seekVideo]);
+  }, [
+    roomConnection.connected,
+    roomConnection,
+    roomName,
+    pausePlaying,
+    resumePlaying,
+    changedVideoEvent,
+    seekVideo,
+  ]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -128,61 +182,142 @@ export const RoomPage = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   youtubePlayer.current?.getInternalPlayer().setVolume(volume);
-  // }, [volume]);
-
+  const muted = volume === 0;
   if (!room) return null;
 
   return (
     <>
       <Header roomName={roomName} />
-      <Container maxWidth="xl" sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }}>
-        <Box maxWidth="45%" sx={{ p: 2 }}>
-          <ReactPlayer url={currentVideoUrl} onReady={roomInit} ref={youtubePlayer} playing={playing} volume={volume} />
+      <Container
+        maxWidth={'xxl' as Breakpoint}
+        sx={{
+          p: 2,
+          display: 'flex',
+          justifyContent: 'space-between',
+          flexDirection: { sm: 'column', lg: 'row' },
+          height: '95vh',
+        }}
+      >
+        <Box p={2} width="75%">
+          <ReactPlayer
+            url={currentVideoUrl}
+            onReady={roomSync}
+            ref={youtubePlayer}
+            playing={playing}
+            volume={volume}
+            muted={muted}
+            width="100%"
+            height="calc(100%)"
+          />
           <Divider sx={{ my: 2 }} />
-          <Paper variant="outlined">
-            <Box display="flex" flexDirection="column" justifyContent="flex-end" height="40vh" p={2}>
-              <Box mb={3}>
-                {exampleChat.map(msg => (
-                  <ChatMessage chatItem={msg} key={JSON.stringify(msg)} />
+        </Box>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexDirection="column"
+          width="25%"
+          maxHeight="90vh"
+        >
+          <Box
+            sx={{
+              height: '20vh',
+            }}
+          >
+            <Controls
+              currentVideo={room.currentVideo}
+              playing={playing}
+              volume={volume}
+              currentTime={Math.round(currentTime)}
+              duration={toSeconds(parse(room.currentVideo.contentDetails.duration))}
+              onSyncClick={roomSync}
+              onPlayClick={playing ? onPauseClick : onPlayClick}
+              onVolumeChange={onVolumeChange}
+              onSeek={value => onSeek(value)}
+              onNextClick={onNextClick}
+              onPrevClick={onPrevClick}
+            />
+          </Box>
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>Current playlist</Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              sx={{
+                maxHeight: '50vh',
+                overflow: 'scroll',
+              }}
+            >
+              <Box
+                sx={{
+                  height: '100%',
+                }}
+              >
+                {room.currentPlaylistItems.items.map(e => (
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    width="100%"
+                    key={e.id}
+                  >
+                    <Typography>{e.snippet.title}</Typography>
+                    <Button onClick={() => changeVideo(e.contentDetails.videoId)}>
+                      Change Video
+                    </Button>
+                  </Box>
                 ))}
               </Box>
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2a-content"
+              id="panel2a-header"
+            >
+              <Typography>Chat</Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              sx={{
+                maxHeight: '30vh',
+                overflow: 'scroll',
+              }}
+            >
+              <Paper variant="outlined">
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="flex-end"
+                  height="40vh"
+                  p={2}
+                >
+                  <Box mb={3}>
+                    {exampleChat.map(msg => (
+                      <ChatMessage chatItem={msg} key={JSON.stringify(msg)} />
+                    ))}
+                  </Box>
 
-              <TextField
-                sx={{ justifySelf: 'flex-end' }}
-                placeholder="Send a message"
-                variant="standard"
-                InputProps={{
-                  endAdornment: (
-                    <IconButton color="primary">
-                      <SendIcon />
-                    </IconButton>
-                  ),
-                }}
-              />
-            </Box>
-          </Paper>
-          <Button onClick={onNextClick}>{'Next Song'}</Button>
-          <Button onClick={() => onSeek(1)}>{'Seek to 00:01'}</Button>
-        </Box>
-        <Box display="flex" justifyContent="space-between" alignItems="center" flexDirection="column" width="50%">
-          <Controls
-            playing={playing}
-            onPlayClick={playing ? onPauseClick : onPlayClick}
-            volume={volume}
-            onVolumeChange={onVolumeChange}
-            currentTime={Math.round(currentTime)}
-            duration={toSeconds(parse(room.currentVideo.contentDetails.duration))}
-          />
-          {room.currentPlaylistItems.items.map(e => {
-            return (
-              <Box display="flex" justifyContent="space-between" alignItems="center" width="100%" key={e.id}>
-                <Typography>{e.snippet.title}</Typography>
-                <Button onClick={() => changeVideo(e.contentDetails.videoId)}>Change Video</Button>
-              </Box>
-            );
-          })}
+                  <TextField
+                    sx={{ justifySelf: 'flex-end' }}
+                    placeholder="Send a message"
+                    variant="standard"
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton color="primary">
+                          <SendIcon />
+                        </IconButton>
+                      ),
+                    }}
+                  />
+                </Box>
+              </Paper>
+            </AccordionDetails>
+          </Accordion>
         </Box>
       </Container>
     </>
