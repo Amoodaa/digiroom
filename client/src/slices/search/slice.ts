@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ApiResponse } from 'digiroom-types';
+
+import { ApiError, ApiResponse } from 'digiroom-types';
 import { axios } from 'utils/axios.util';
 import { YoutubePlaylistSearch, YoutubeVideoSearch } from 'youtube.ts';
 
@@ -34,16 +35,19 @@ export const searchSlice = createSlice({
 
 export type YoutubeSearchForm = { searchTerm: string; type: 'playlists' | 'videos' };
 
-const searchYoutube = createAsyncThunk(`${searchSlice.name}/searchYoutube`, async ({ searchTerm, type }: YoutubeSearchForm, { rejectWithValue }) => {
-  try {
-    const { data } = await axios.get<ApiResponse<YoutubeVideoSearch | YoutubePlaylistSearch>>(
-      `/youtube/search?searchTerm=${searchTerm}&type=${type}`,
-    );
-    return data;
-  } catch (e) {
-    return rejectWithValue(e);
-  }
-});
+const searchYoutube = createAsyncThunk(
+  `${searchSlice.name}/searchYoutube`,
+  async ({ searchTerm, type }: YoutubeSearchForm, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get<
+        ApiResponse<YoutubeVideoSearch | YoutubePlaylistSearch>
+      >(`/youtube/search?searchTerm=${searchTerm}&type=${type}`);
+      return data;
+    } catch (e) {
+      return rejectWithValue(e as ApiError);
+    }
+  },
+);
 
 export const searchActions = { ...searchSlice.actions, searchYoutube };
 

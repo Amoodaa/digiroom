@@ -42,19 +42,24 @@ export class RoomService {
 
     if (playlistId) {
       newRoom.currentPlaylistInfo = await youtubeClient.playlists.get(playlistId);
-      newRoom.currentPlaylistItems = await youtubeClient.playlists.items(playlistId, { maxResults: '50' });
+      newRoom.currentPlaylistItems = await youtubeClient.playlists.items(playlistId, {
+        maxResults: '50',
+      });
     }
 
     if (videoId) {
       newRoom.currentVideoId = videoId;
 
       if (newRoom.currentPlaylistItems) {
-        const foundVideoId = newRoom.currentPlaylistItems.items.find(item => item.contentDetails.videoId === videoId).contentDetails.videoId;
+        const foundVideoId = newRoom.currentPlaylistItems.items.find(
+          item => item.contentDetails.videoId === videoId,
+        ).contentDetails.videoId;
         newRoom.currentVideoId = foundVideoId;
       }
     } else {
       if (newRoom.currentPlaylistItems) {
-        newRoom.currentVideoId = newRoom.currentPlaylistItems.items[0].snippet.resourceId.videoId;
+        newRoom.currentVideoId =
+          newRoom.currentPlaylistItems.items[0].snippet.resourceId.videoId;
       } else {
         throw new HttpError(400, 'No video or playlist id??');
       }

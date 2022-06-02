@@ -10,11 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: "actions/checkout@v3"
+      - uses: 'actions/checkout@v3'
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: "yarn"
+          cache: 'yarn'
+
+      - name: 'Automated Version Bump'
+        id: version-bump
+        uses: 'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          target-branch: 'main'
+          commit-message: 'CI: bumps version to {{version}} [skip ci]'
 
       - run: yarn install --frozen-lockfile
 
@@ -26,12 +35,12 @@ jobs:
         run: cp client/app.yaml client/build/app.yaml
 
       - name: Authenticating with GCP
-        uses: "google-github-actions/auth@v0"
+        uses: 'google-github-actions/auth@v0'
         with:
-          credentials_json: "${{ secrets.GH_ACTIONS_GCP_SA_KEY }}"
+          credentials_json: '${{ secrets.GH_ACTIONS_GCP_SA_KEY }}'
 
       - name: Deploy client app to default service
-        uses: "google-github-actions/deploy-appengine@v0"
+        uses: 'google-github-actions/deploy-appengine@v0'
         with:
           working_directory: client/build
           deliverables: app.yaml
@@ -41,8 +50,8 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "digiroom-a"
-          heroku_email: "amoodaa@gmail.com"
+          heroku_app_name: 'digiroom-a'
+          heroku_email: 'amoodaa@gmail.com'
 
       # - name: Make .env.production.local
       #   uses: SpicyPizza/create-envfile@v1.3
