@@ -26,7 +26,7 @@ jobs:
           commit-message: 'v{{version}}'
       - run: echo ${{ steps.version-bump.outputs }}
       - name: 'Register release in Captur api'
-        run: >
+        run: |
           curl --request POST \
               --url http://api-core.captur.app/app-version \
               --header 'Content-Type: application/json' \
@@ -34,7 +34,7 @@ jobs:
               --data '{
               "appName": "mobile",
               "version": ${{ steps.version-bump.outputs.newTag }},
-              "releaseGitSha": "${{ }}"
+              "releaseGitSha": ""
             }'
 
       - run: yarn install --frozen-lockfile
