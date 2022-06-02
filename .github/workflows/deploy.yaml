@@ -23,7 +23,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           target-branch: 'main'
-          commit-message: 'CI: bumps version to {{version}} [skip ci]'
+          commit-message: 'v{{version}}'
+      - run: echo ${{ steps.version-bump.outputs }}
+      - name: 'Register release in Captur api'
+        run: >
+          curl --request POST \
+              --url http://api-core.captur.app/app-version \
+              --header 'Content-Type: application/json' \
+              --header 'github-release-key: ${{ secrets.GITHUB_RELEASE_KEY }}' \
+              --data '{
+              "appName": "mobile",
+              "version": ${{ steps.version-bump.outputs.newTag }},
+              "releaseGitSha": "${{ }}"
+            }'
 
       - run: yarn install --frozen-lockfile
 
