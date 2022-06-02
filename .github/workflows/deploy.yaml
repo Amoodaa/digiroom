@@ -24,20 +24,6 @@ jobs:
         with:
           target-branch: 'main'
           commit-message: 'v{{version}}'
-      - name: Getting the new commit sha
-        id: new-commit
-        run: echo "::set-output name=new-commit::`git rev-parse HEAD`"
-      - name: 'Register release in Captur api'
-        run: |
-          curl --request POST \
-              --url http://api-core.captur.app/app-version \
-              --header 'Content-Type: application/json' \
-              --header 'github-release-key: ${{ secrets.GITHUB_RELEASE_KEY }}' \
-              --data '{
-              "appName": "mobile",
-              "version": "${{ steps.version-bump.outputs.newTag }}"",
-              "releaseGitSha": "${{ steps.new-commit.outputs.new-commit }}"
-            }'
 
       - run: yarn install --frozen-lockfile
 
