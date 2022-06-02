@@ -24,7 +24,7 @@ jobs:
         with:
           target-branch: 'main'
           commit-message: 'v{{version}}'
-      - run: echo ${{ steps.version-bump.outputs }}
+      - run: echo ${{ steps.version-bump.outputs.newCommit }}
       - name: 'Register release in Captur api'
         run: |
           curl --request POST \
