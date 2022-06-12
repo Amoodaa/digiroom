@@ -264,20 +264,21 @@ export const RoomPage = () => {
                   height: '100%',
                 }}
               >
-                {room.currentPlaylistItems.items.map(e => (
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    width="100%"
-                    key={e.id}
-                  >
-                    <Typography>{e.snippet.title}</Typography>
-                    <Button onClick={() => changeVideo(e.contentDetails.videoId)}>
-                      Change Video
-                    </Button>
-                  </Box>
-                ))}
+                {room.currentPlaylistItems &&
+                  room.currentPlaylistItems.items.map(e => (
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      width="100%"
+                      key={e.id}
+                    >
+                      <Typography>{e.snippet.title}</Typography>
+                      <Button onClick={() => changeVideo(e.contentDetails.videoId)}>
+                        Change Video
+                      </Button>
+                    </Box>
+                  ))}
               </Box>
             </AccordionDetails>
           </Accordion>
