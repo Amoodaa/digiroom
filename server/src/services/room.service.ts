@@ -116,9 +116,18 @@ export class RoomService {
 
     if (!foundRoom) throw new HttpError(404, "You're not room");
 
-    const foundMessages = await ChatModel.findOne({ room: foundRoom._id }).lean();
+    let foundChat = await ChatModel.findOne({ room: foundRoom._id }).lean();
 
-    return foundMessages;
+    if (!foundChat) {
+      foundChat = (
+        await ChatModel.create({
+          room: foundRoom._id,
+          messages: [],
+        })
+      ).toObject();
+    }
+
+    return foundChat;
   }
 
   public async sendMessageToRoom(roomName: string, message: Message): Promise<void> {
@@ -134,7 +143,6 @@ export class RoomService {
       {
         $push: { messages: message },
       },
-      { upsert: true },
     );
   }
 }
