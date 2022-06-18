@@ -47,6 +47,12 @@ export const initializeSocketIOServer = (httpServer: Server) => {
           firstSocket.emit('request-room-player-data');
         }
       });
+
+      socket.on('send-message', async (roomName, message) => {
+        await roomService.sendMessageToRoom(roomName, message);
+        console.log('why twice');
+        youtubeTopic.to(roomName).emit('receive-message', message);
+      });
     });
 
     socket.on('leave-room', roomName => {
@@ -54,6 +60,9 @@ export const initializeSocketIOServer = (httpServer: Server) => {
       socket.removeAllListeners('pause-room');
       socket.removeAllListeners('resume-room');
       socket.removeAllListeners('change-video');
+      socket.removeAllListeners('seek-video');
+      socket.removeAllListeners('request-room-player-data');
+      socket.removeAllListeners('send-message');
     });
   });
 };

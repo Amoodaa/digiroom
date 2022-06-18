@@ -50,6 +50,17 @@ class RoomController {
       next(error);
     }
   };
+
+  public getChat = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { roomName } = req.params;
+      const chat = await this.roomService.getChatForRoom(roomName);
+
+      res.status(200).json({ data: chat, message: 'getChat' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default RoomController;

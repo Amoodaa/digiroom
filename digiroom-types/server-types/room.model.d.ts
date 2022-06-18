@@ -1,5 +1,5 @@
 import { YoutubePlaylist, YoutubePlaylistItemsSearch, YoutubeVideo } from 'youtube.ts';
-declare class RoomSchema {
+export declare class RoomSchema {
     name: string;
     currentPlaylistItems: YoutubePlaylistItemsSearch;
     currentPlaylistInfo: YoutubePlaylist;
@@ -10,4 +10,3 @@ declare class RoomSchema {
 }
 export declare type Room = RoomSchema;
 export declare const RoomModel: import("@typegoose/typegoose").ReturnModelType<typeof RoomSchema, import("@typegoose/typegoose/lib/types").BeAnObject>;
-export {};

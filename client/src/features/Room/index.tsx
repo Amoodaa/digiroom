@@ -17,19 +17,19 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { Header } from '../../components/Header';
-import { ChatMessage as IChatMessage, exampleChat } from './data';
 import { roomActions } from 'slices/room/slice';
 import { Breakpoint, Button } from '@mui/material';
-import { Room } from 'digiroom-types';
-import { PlayerState } from 'digiroom-types/PlayerState';
+import { Message, Room, SocketEventsMap } from 'digiroom-types';
 import { Controls } from './Controls';
 import { parse, toSeconds } from 'iso8601-duration';
+import { useForm } from 'react-hook-form';
 
-export const ChatMessage: FC<{ chatItem: IChatMessage }> = ({ chatItem }) => (
+export const ChatMessage: FC<{ chatItem: Message }> = ({ chatItem }) => (
   <Typography>
-    [{chatItem.at.toLocaleTimeString()}] {chatItem.senderName}
+    {chatItem.createdAt && `[${new Date(chatItem.createdAt).toLocaleTimeString()}]`}{' '}
+    {chatItem.user}
     {chatItem.type === 'chat' ? ': ' : ' '}
-    {chatItem.content}
+    {chatItem.message}
   </Typography>
 );
 
@@ -39,6 +39,7 @@ export const RoomPage = () => {
   const { roomConnection } = useConnect({ roomName });
   const youtubePlayer = useRef<ReactPlayer | null>(null);
   const room = useAppSelector(s => s.room.room);
+  const messages = useAppSelector(s => s.room.messages);
   const [playing, setPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const currentVideoId = useAppSelector(s => s.room.room?.currentVideoId) ?? '';
@@ -141,8 +142,14 @@ export const RoomPage = () => {
       });
     };
 
-    const processRoomState = ({ currentTime }: PlayerState) => {
+    const processRoomState: SocketEventsMap['share-room-player-data'] = ({
+      currentTime,
+    }) => {
       seekVideo(currentTime);
+    };
+
+    const receiveMessage: SocketEventsMap['receive-message'] = message => {
+      dispatch(roomActions.receiveMessage(message));
     };
 
     roomConnection.on('resume-room', resumePlaying);
@@ -151,6 +158,7 @@ export const RoomPage = () => {
     roomConnection.on('seek-video', seekVideo);
     roomConnection.on('request-room-player-data', shareRoomState);
     roomConnection.on('share-room-player-data', processRoomState);
+    roomConnection.on('receive-message', receiveMessage);
 
     return () => {
       roomConnection.off('resume-room', resumePlaying);
@@ -159,6 +167,7 @@ export const RoomPage = () => {
       roomConnection.off('seek-video', seekVideo);
       roomConnection.off('request-room-player-data', shareRoomState);
       roomConnection.off('share-room-player-data', processRoomState);
+      roomConnection.off('receive-message', receiveMessage);
     };
   }, [
     roomConnection.connected,
@@ -168,6 +177,7 @@ export const RoomPage = () => {
     resumePlaying,
     changedVideoEvent,
     seekVideo,
+    dispatch,
   ]);
 
   useEffect(() => {
@@ -181,6 +191,8 @@ export const RoomPage = () => {
       clearInterval(timer);
     };
   }, []);
+
+  const { handleSubmit, register } = useForm<{ messageText: string }>();
 
   const muted = volume === 0;
   if (!room) return null;
@@ -307,9 +319,10 @@ export const RoomPage = () => {
                   flexDirection="column"
                   justifyContent="flex-end"
                   p={2}
+                  component="form"
                 >
                   <Box mb={3}>
-                    {exampleChat.map(msg => (
+                    {messages.map(msg => (
                       <ChatMessage chatItem={msg} key={JSON.stringify(msg)} />
                     ))}
                   </Box>
@@ -320,11 +333,21 @@ export const RoomPage = () => {
                     variant="standard"
                     InputProps={{
                       endAdornment: (
-                        <IconButton color="primary">
+                        <IconButton
+                          color="primary"
+                          onClick={handleSubmit(formdata => {
+                            roomConnection.emit('send-message', roomName, {
+                              message: formdata.messageText,
+                              user: 'User a',
+                              type: 'chat',
+                            });
+                          })}
+                        >
                           <SendIcon />
                         </IconButton>
                       ),
                     }}
+                    {...register('messageText')}
                   />
                 </Box>
               </Paper>

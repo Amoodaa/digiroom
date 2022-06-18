@@ -1,8 +1,13 @@
-import { prop, getModelForClass, modelOptions } from '@typegoose/typegoose';
+import { prop, getModelForClass, modelOptions, Severity } from '@typegoose/typegoose';
 import { YoutubePlaylist, YoutubePlaylistItemsSearch, YoutubeVideo } from 'youtube.ts';
 
-@modelOptions({ schemaOptions: { collection: 'rooms', timestamps: true } })
-class RoomSchema {
+@modelOptions({
+  schemaOptions: { collection: 'rooms', timestamps: true },
+  options: {
+    allowMixed: Severity.ALLOW,
+  },
+})
+export class RoomSchema {
   @prop({ type: String, required: true, unique: true })
   public name: string;
 

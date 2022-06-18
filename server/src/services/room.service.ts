@@ -3,6 +3,7 @@ import { HttpError } from '@/exceptions/HttpError';
 import { isEmpty } from '@utils/util';
 import { RoomModel, Room } from '@/models/room.model';
 import { youtubeClient } from '@/utils/youtube';
+import { ChatModel, Chat, Message } from '@/models/chat.model';
 
 export class RoomService {
   public async findRoomById(roomId: string): Promise<Room> {
@@ -108,5 +109,32 @@ export class RoomService {
     if (!deleteRoomById) throw new HttpError(409, "You're not room");
 
     return deleteRoomById;
+  }
+
+  public async getChatForRoom(roomName: string): Promise<Chat> {
+    const foundRoom = await RoomModel.findOne({ name: roomName });
+
+    if (!foundRoom) throw new HttpError(404, "You're not room");
+
+    const foundMessages = await ChatModel.findOne({ room: foundRoom._id }).lean();
+
+    return foundMessages;
+  }
+
+  public async sendMessageToRoom(roomName: string, message: Message): Promise<void> {
+    if (isEmpty(roomName)) throw new HttpError(400, 'No roomid provided');
+    if (isEmpty(message)) throw new HttpError(400, 'No message provided');
+
+    const room = await RoomModel.findOne({ name: roomName }).select('_id');
+
+    if (!room) throw new HttpError(404, 'Room not found');
+
+    await ChatModel.updateOne(
+      { room: room._id },
+      {
+        $push: { messages: message },
+      },
+      { upsert: true },
+    );
   }
 }

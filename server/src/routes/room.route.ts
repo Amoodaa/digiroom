@@ -15,10 +15,21 @@ class RoomsRoute implements Routes {
 
   private initializeRoutes() {
     // /room
-    this.router.post(``, validationMiddleware(CreateRoomDto, 'body'), this.roomController.createRoom);
+    this.router.post(
+      ``,
+      validationMiddleware(CreateRoomDto, 'body'),
+      this.roomController.createRoom,
+    );
     this.router.get(`/:roomName`, this.roomController.getRoomByName);
-    this.router.put(`/:roomId`, validationMiddleware(CreateRoomDto, 'body', true), this.roomController.updateRoom);
+    this.router.put(
+      `/:roomId`,
+      validationMiddleware(CreateRoomDto, 'body', true),
+      this.roomController.updateRoom,
+    );
     this.router.delete(`/:roomId`, this.roomController.deleteRoom);
+
+    // /room/:roomName/chat
+    this.router.get(`/:roomName/chat`, this.roomController.getChat);
   }
 }
 
