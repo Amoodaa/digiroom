@@ -5,5 +5,6 @@ declare class RoomController {
     updateRoom: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     deleteRoom: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     getChat: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    addUserToRoom: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }
 export default RoomController;
