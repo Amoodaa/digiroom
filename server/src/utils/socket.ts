@@ -2,10 +2,11 @@ import { Server as SocketServer } from 'socket.io';
 import { SocketEventsMap } from 'digiroom-types';
 import { CREDENTIALS, ORIGIN } from '@/config';
 import { Server } from 'http';
-import { RoomService } from '@/services/room.service';
+import { roomService } from '@/services/room.service';
+import { userService } from '@/services/user.service';
 
 export let io: SocketServer<SocketEventsMap> = null;
-const roomService = new RoomService();
+
 export const initializeSocketIOServer = (httpServer: Server) => {
   io = new SocketServer<SocketEventsMap>(httpServer, {
     cors: {
@@ -17,8 +18,15 @@ export const initializeSocketIOServer = (httpServer: Server) => {
   const youtubeTopic = io.of('/youtube');
 
   youtubeTopic.on('connection', socket => {
-    socket.on('join-room', roomName => {
+    socket.on('join-room', async (roomName, username) => {
       socket.join(roomName);
+      await userService.joinRoom(roomName, username, socket.id);
+      await roomService.sendMessageToRoom(roomName, {
+        user: username,
+        message: `${username} has joined the room`,
+        type: 'action',
+      });
+      socket.emit('joined-room');
 
       socket.on('pause-room', () => {
         youtubeTopic.to(roomName).emit('pause-room');

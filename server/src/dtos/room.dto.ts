@@ -12,4 +12,7 @@ export class CreateRoomDto implements Pick<Room, 'name'> {
   @IsString()
   @IsOptional()
   public videoId?: string;
+
+  @IsString()
+  public username: string;
 }

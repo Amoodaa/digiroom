@@ -1,15 +1,14 @@
 import { CreateRoomDto } from '@/dtos/room.dto';
 import { Room } from '@/models/room.model';
-import { RoomService } from '@/services/room.service';
+import { roomService } from '@/services/room.service';
+import { userService } from '@/services/user.service';
 import { NextFunction, Request, Response } from 'express';
 
 class RoomController {
-  public roomService = new RoomService();
-
   public getRoomByName = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { roomName } = req.params;
-      const findOneRoomData: Room = await this.roomService.findRoomByName(roomName);
+      const findOneRoomData: Room = await roomService.findRoomByName(roomName);
 
       res.status(200).json({ data: findOneRoomData, message: 'findOne' });
     } catch (error) {
@@ -20,7 +19,7 @@ class RoomController {
   public createRoom = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const roomData: CreateRoomDto = req.body;
-      const createRoomData: Room = await this.roomService.createRoom(roomData);
+      const createRoomData: Room = await roomService.createRoom(roomData);
 
       res.status(201).json({ data: createRoomData, message: 'created' });
     } catch (error) {
@@ -32,7 +31,7 @@ class RoomController {
     try {
       const { roomId } = req.params;
       const roomData: CreateRoomDto = req.body;
-      const updateRoomData: Room = await this.roomService.updateRoom(roomId, roomData);
+      const updateRoomData: Room = await roomService.updateRoom(roomId, roomData);
 
       res.status(200).json({ data: updateRoomData, message: 'updated' });
     } catch (error) {
@@ -43,7 +42,7 @@ class RoomController {
   public deleteRoom = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { roomId } = req.params;
-      const deleteRoomData: Room = await this.roomService.deleteRoom(roomId);
+      const deleteRoomData: Room = await roomService.deleteRoom(roomId);
 
       res.status(200).json({ data: deleteRoomData, message: 'deleted' });
     } catch (error) {
@@ -54,9 +53,24 @@ class RoomController {
   public getChat = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { roomName } = req.params;
-      const chat = await this.roomService.getChatForRoom(roomName);
+      const chat = await roomService.getChatForRoom(roomName);
 
       res.status(200).json({ data: chat, message: 'getChat' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public addUserToRoom = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { roomName } = req.params;
+      const { username } = req.body;
+
+      if (!username) throw new Error('Username is required');
+
+      const room = await userService.addUserToRoom(roomName, username);
+
+      res.status(200).json({ data: room, message: 'addUserToRoom' });
     } catch (error) {
       next(error);
     }

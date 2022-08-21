@@ -7,6 +7,7 @@ import { red } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Snackbars } from 'components/Snackbar';
+import { UsernameDialoug } from 'components/UsernameDialoug';
 import { Home } from 'features/Home';
 import { RoomPage } from 'features/Room';
 import { SnackbarProvider } from 'notistack';
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/:roomName" element={<RoomPage />} />
       </Routes>
+      <UsernameDialoug />
     </ThemeProvider>
   );
 }

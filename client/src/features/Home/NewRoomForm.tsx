@@ -8,14 +8,19 @@ import { youtubeUrlRegex } from 'utils/regex.util';
 import { FC } from 'react';
 
 export const youtubeUrlSchema = yup.object({
-  youtubeUrl: yup.string().matches(youtubeUrlRegex, 'Please provide a valid youtube url!').required('Please provide a youtube url to start a room!'),
+  youtubeUrl: yup
+    .string()
+    .matches(youtubeUrlRegex, 'Please provide a valid youtube url!')
+    .required('Please provide a youtube url to start a room!'),
 });
 
 type YoutubeUrlForm = {
   youtubeUrl: string;
 };
 
-export const NewRoomForm: FC<{ onSubmit: (formData: YoutubeUrlForm) => void }> = ({ onSubmit }) => {
+export const NewRoomForm: FC<{ onSubmit: (formData: YoutubeUrlForm) => void }> = ({
+  onSubmit,
+}) => {
   const youtubeUrlForm = useForm<YoutubeUrlForm>({
     defaultValues: { youtubeUrl: '' },
     shouldFocusError: true,
@@ -33,10 +38,22 @@ export const NewRoomForm: FC<{ onSubmit: (formData: YoutubeUrlForm) => void }> =
           control={youtubeUrlForm.control}
           name="youtubeUrl"
           render={({ field, fieldState: { error } }) => (
-            <TextField label="Youtube Url" error={!!error} helperText={error?.message} fullWidth {...field} sx={{ width: '50%', mr: 3 }} />
+            <TextField
+              label="Youtube Url"
+              error={!!error}
+              helperText={error?.message}
+              fullWidth
+              {...field}
+              sx={{ width: '50%', mr: 3 }}
+            />
           )}
         />
-        <Button size="large" color="primary" variant="contained" onClick={youtubeFormOnSubmit}>
+        <Button
+          size="large"
+          color="primary"
+          variant="contained"
+          onClick={youtubeFormOnSubmit}
+        >
           Start a room
         </Button>
       </Box>

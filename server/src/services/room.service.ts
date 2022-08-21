@@ -5,7 +5,7 @@ import { RoomModel, Room } from '@/models/room.model';
 import { youtubeClient } from '@/utils/youtube';
 import { ChatModel, Chat, Message } from '@/models/chat.model';
 
-export class RoomService {
+class RoomService {
   public async findRoomById(roomId: string): Promise<Room> {
     if (isEmpty(roomId)) throw new HttpError(400, "You're not roomId");
 
@@ -27,7 +27,7 @@ export class RoomService {
   public async createRoom(roomData: CreateRoomDto): Promise<Room> {
     if (isEmpty(roomData)) throw new HttpError(400, "You're not roomData");
 
-    const { name, playlistId, videoId } = roomData;
+    const { name, playlistId, videoId, username } = roomData;
 
     const foundRoom = await RoomModel.findOne({ name });
 
@@ -39,6 +39,13 @@ export class RoomService {
       currentPlaylistInfo: undefined,
       currentVideoId: videoId,
       currentVideo: undefined,
+      users: [
+        {
+          name: username,
+          role: 'owner',
+          state: 'offline',
+        },
+      ], // TODO: add the first user as an owner
     };
 
     if (playlistId) {
@@ -72,15 +79,6 @@ export class RoomService {
 
     return createRoomData;
   }
-
-  // TODO:
-  // public async addUserToRoom(roomId: string, userId: string): Promise<Room> {
-  //   const foundRoom = await RoomModel.findByIdAndUpdate(roomId);
-
-  //   if (!foundRoom) throw new HttpError(404, "You're not room");
-
-  //   return foundRoom;
-  // }
 
   public async changeCurrentVideo(roomName: string, videoId: string): Promise<Room> {
     const foundRoom = await RoomModel.findOne({ name: roomName });
@@ -138,6 +136,7 @@ export class RoomService {
 
     if (!room) throw new HttpError(404, 'Room not found');
 
+    // chat model can be so big, why do i wanna download it?
     await ChatModel.updateOne(
       { room: room._id },
       {
@@ -146,3 +145,5 @@ export class RoomService {
     );
   }
 }
+
+export const roomService = new RoomService();
