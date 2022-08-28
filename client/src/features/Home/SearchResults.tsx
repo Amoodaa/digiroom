@@ -9,7 +9,8 @@ import { FC } from 'react';
 import { examplePlaylistSearch } from './data';
 import { useAppSelector } from 'app/hooks';
 import { YoutubePlaylistSearchItem, YoutubeVideoSearchItem } from 'youtube.ts';
-import urlParser, { YouTubeMediaTypes } from 'js-video-url-parser';
+import urlParser from 'js-video-url-parser';
+import { VideoInfo } from 'js-video-url-parser/lib/urlParser';
 
 const isYoutubeVideoId = (
   id: (YoutubeVideoSearchItem | YoutubePlaylistSearchItem)['id'],
@@ -24,23 +25,16 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
   const handleCardClick = (
     id: (YoutubeVideoSearchItem | YoutubePlaylistSearchItem)['id'],
   ) => {
-    const mediaTypes: Record<string, YouTubeMediaTypes> = {
-      'youtube#playlist': 'playlist',
-      'youtube#video': 'video',
-    };
-    const mediaType = mediaTypes[id.kind];
-
     if (isYoutubeVideoId(id)) {
       const { videoId } = id;
       const url = urlParser.create({
         videoInfo: {
           id: videoId,
-          mediaType,
+          mediaType: 'video',
           provider: 'youtube',
         },
         format: 'long',
       });
-
       if (url) {
         onYoutubeClick(url);
       }
@@ -49,11 +43,13 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
       const url = urlParser.create({
         videoInfo: {
           id: playlistId,
+          list: playlistId,
           provider: 'youtube',
-          mediaType,
-        },
+          mediaType: 'playlist',
+        } as VideoInfo,
         format: 'long',
       });
+
       if (url) {
         onYoutubeClick(url);
       }
@@ -69,7 +65,7 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
               width: 320,
               m: 2,
             }}
-            key={'123'}
+            key={isYoutubeVideoId(id) ? id.videoId : id.playlistId}
           >
             <CardMedia
               component="img"
