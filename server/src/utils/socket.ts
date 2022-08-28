@@ -61,16 +61,25 @@ export const initializeSocketIOServer = (httpServer: Server) => {
         console.log('why twice');
         youtubeTopic.to(roomName).emit('receive-message', message);
       });
-    });
 
-    socket.on('leave-room', roomName => {
-      socket.leave(roomName);
-      socket.removeAllListeners('pause-room');
-      socket.removeAllListeners('resume-room');
-      socket.removeAllListeners('change-video');
-      socket.removeAllListeners('seek-video');
-      socket.removeAllListeners('request-room-player-data');
-      socket.removeAllListeners('send-message');
+      socket.on('disconnect', async () => {
+        const { name } = await userService.leaveRoom(roomName, socket.id);
+        await roomService.sendMessageToRoom(roomName, {
+          user: name,
+          message: `${name} has left the room`,
+          type: 'action',
+        });
+
+        socket.removeAllListeners('pause-room');
+        socket.removeAllListeners('resume-room');
+        socket.removeAllListeners('change-video');
+        socket.removeAllListeners('seek-video');
+        socket.removeAllListeners('request-room-player-data');
+        socket.removeAllListeners('send-message');
+        socket.removeAllListeners('disconnect');
+
+        socket.leave(roomName);
+      });
     });
   });
 };

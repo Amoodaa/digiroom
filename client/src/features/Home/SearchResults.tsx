@@ -22,40 +22,39 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
   const searchResults =
     useAppSelector(s => s.search.youtubeSearchResult) ?? examplePlaylistSearch;
 
-  const handleCardClick = (
-    id: (YoutubeVideoSearchItem | YoutubePlaylistSearchItem)['id'],
-  ) => {
-    if (isYoutubeVideoId(id)) {
-      const { videoId } = id;
-      const url = urlParser.create({
-        videoInfo: {
-          id: videoId,
-          mediaType: 'video',
-          provider: 'youtube',
-        },
-        format: 'long',
-      });
-      if (url) {
-        onYoutubeClick(url);
-      }
-    } else {
-      const { playlistId } = id;
-      const url = urlParser.create({
-        videoInfo: {
-          id: playlistId,
-          list: playlistId,
-          provider: 'youtube',
-          mediaType: 'playlist',
-        } as VideoInfo,
-        format: 'long',
-      });
-
-      if (url) {
-        onYoutubeClick(url);
-      }
+  const handleVideoCardClick = (id: YoutubeVideoSearchItem['id']) => {
+    const { videoId } = id;
+    const url = urlParser.create({
+      videoInfo: {
+        id: videoId,
+        mediaType: 'video',
+        provider: 'youtube',
+      },
+      format: 'long',
+    });
+    if (url) {
+      onYoutubeClick(url);
     }
+
     // TODO: error handling/report to dev?? could be just dumb typing
   };
+
+  const handlePlaylistCardClick = ({ playlistId }: YoutubePlaylistSearchItem['id']) => {
+    const url = urlParser.create({
+      videoInfo: {
+        id: playlistId,
+        list: playlistId,
+        provider: 'youtube',
+        mediaType: 'playlist',
+      } as VideoInfo,
+      format: 'long',
+    });
+
+    if (url) {
+      onYoutubeClick(url);
+    }
+  };
+
   return (
     <Box display="flex" flexWrap="wrap" justifyContent="center">
       {searchResults.items.map(
@@ -95,7 +94,15 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
                 )}
               </CardContent>
               <CardActions>
-                <Button onClick={() => handleCardClick(id)}>Start this course!</Button>
+                <Button
+                  onClick={() =>
+                    isYoutubeVideoId(id)
+                      ? handleVideoCardClick(id)
+                      : handlePlaylistCardClick(id)
+                  }
+                >
+                  Start this course!
+                </Button>
               </CardActions>
             </Box>
           </Card>

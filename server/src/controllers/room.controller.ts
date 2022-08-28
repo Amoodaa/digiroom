@@ -53,6 +53,7 @@ class RoomController {
   public getChat = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { roomName } = req.params;
+      console.log(roomName);
       const chat = await roomService.getChatForRoom(roomName);
 
       res.status(200).json({ data: chat, message: 'getChat' });

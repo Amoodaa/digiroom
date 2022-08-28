@@ -22,7 +22,7 @@ class MessageSchema {
 }
 
 @modelOptions({
-  schemaOptions: { collection: 'chat', timestamps: true },
+  schemaOptions: { collection: 'chats', timestamps: true },
   options: {
     allowMixed: Severity.ALLOW,
   },

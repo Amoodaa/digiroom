@@ -250,7 +250,6 @@ export const RoomPage = () => {
           justifyContent="space-between"
           alignItems="center"
           flexDirection="column"
-          width="25%"
           maxHeight="90vh"
         >
           <Box
@@ -274,7 +273,6 @@ export const RoomPage = () => {
             />
           </Box>
           <Accordion
-            defaultExpanded
             sx={{
               width: '100%',
             }}
@@ -329,12 +327,7 @@ export const RoomPage = () => {
             >
               <Typography>Chat</Typography>
             </AccordionSummary>
-            <AccordionDetails
-              sx={{
-                maxHeight: '25vh',
-                overflow: 'scroll',
-              }}
-            >
+            <AccordionDetails>
               <Paper variant="outlined">
                 <Box
                   display="flex"
@@ -343,7 +336,13 @@ export const RoomPage = () => {
                   p={2}
                   component="form"
                 >
-                  <Box mb={3}>
+                  <Box
+                    mb={3}
+                    maxHeight="25vh"
+                    sx={{
+                      overflowY: 'scroll',
+                    }}
+                  >
                     {messages.map(msg => (
                       <ChatMessage chatItem={msg} key={JSON.stringify(msg)} />
                     ))}
@@ -360,7 +359,7 @@ export const RoomPage = () => {
                           onClick={handleSubmit(formdata => {
                             roomConnection.emit('send-message', roomName, {
                               message: formdata.messageText,
-                              user: 'User a',
+                              user: username,
                               type: 'chat',
                             });
                           })}

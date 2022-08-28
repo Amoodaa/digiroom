@@ -21,7 +21,7 @@ class UserSchema {
 }
 
 @modelOptions({
-  schemaOptions: { collection: 'room', timestamps: true },
+  schemaOptions: { collection: 'rooms', timestamps: true },
   options: {
     allowMixed: Severity.ALLOW,
   },

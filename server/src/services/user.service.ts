@@ -39,6 +39,24 @@ export class UserService {
 
     return userExists;
   }
+
+  // this only called from socket events
+  public async leaveRoom(roomName: string, socketId: string): Promise<User> {
+    const foundRoom = await RoomModel.findOne({ name: roomName });
+
+    if (!foundRoom) throw new HttpError(404, "You're not room");
+
+    const userLeft = foundRoom.users.find(user => user.socketId === socketId);
+
+    if (!userLeft) throw new HttpError(404, `User with ${socketId} doesn't exist`);
+
+    userLeft.state = 'offline';
+    userLeft.socketId = null;
+
+    await foundRoom.save();
+
+    return userLeft;
+  }
 }
 
 export const userService = new UserService();
