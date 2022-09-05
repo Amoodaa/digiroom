@@ -9,7 +9,8 @@ import { FC } from 'react';
 import { examplePlaylistSearch } from './data';
 import { useAppSelector } from 'app/hooks';
 import { YoutubePlaylistSearchItem, YoutubeVideoSearchItem } from 'youtube.ts';
-import urlParser, { YouTubeMediaTypes } from 'js-video-url-parser';
+import urlParser from 'js-video-url-parser';
+import { VideoInfo } from 'js-video-url-parser/lib/urlParser';
 
 const isYoutubeVideoId = (
   id: (YoutubeVideoSearchItem | YoutubePlaylistSearchItem)['id'],
@@ -21,45 +22,39 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
   const searchResults =
     useAppSelector(s => s.search.youtubeSearchResult) ?? examplePlaylistSearch;
 
-  const handleCardClick = (
-    id: (YoutubeVideoSearchItem | YoutubePlaylistSearchItem)['id'],
-  ) => {
-    const mediaTypes: Record<string, YouTubeMediaTypes> = {
-      'youtube#playlist': 'playlist',
-      'youtube#video': 'video',
-    };
-    const mediaType = mediaTypes[id.kind];
-
-    if (isYoutubeVideoId(id)) {
-      const { videoId } = id;
-      const url = urlParser.create({
-        videoInfo: {
-          id: videoId,
-          mediaType,
-          provider: 'youtube',
-        },
-        format: 'long',
-      });
-
-      if (url) {
-        onYoutubeClick(url);
-      }
-    } else {
-      const { playlistId } = id;
-      const url = urlParser.create({
-        videoInfo: {
-          id: playlistId,
-          provider: 'youtube',
-          mediaType,
-        },
-        format: 'long',
-      });
-      if (url) {
-        onYoutubeClick(url);
-      }
+  const handleVideoCardClick = (id: YoutubeVideoSearchItem['id']) => {
+    const { videoId } = id;
+    const url = urlParser.create({
+      videoInfo: {
+        id: videoId,
+        mediaType: 'video',
+        provider: 'youtube',
+      },
+      format: 'long',
+    });
+    if (url) {
+      onYoutubeClick(url);
     }
+
     // TODO: error handling/report to dev?? could be just dumb typing
   };
+
+  const handlePlaylistCardClick = ({ playlistId }: YoutubePlaylistSearchItem['id']) => {
+    const url = urlParser.create({
+      videoInfo: {
+        id: playlistId,
+        list: playlistId,
+        provider: 'youtube',
+        mediaType: 'playlist',
+      } as VideoInfo,
+      format: 'long',
+    });
+
+    if (url) {
+      onYoutubeClick(url);
+    }
+  };
+
   return (
     <Box display="flex" flexWrap="wrap" justifyContent="center">
       {searchResults.items.map(
@@ -69,7 +64,7 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
               width: 320,
               m: 2,
             }}
-            key={'123'}
+            key={isYoutubeVideoId(id) ? id.videoId : id.playlistId}
           >
             <CardMedia
               component="img"
@@ -99,7 +94,15 @@ export const SearchResults: FC<{ onYoutubeClick: (youtubeUrl: string) => void }>
                 )}
               </CardContent>
               <CardActions>
-                <Button onClick={() => handleCardClick(id)}>Start this course!</Button>
+                <Button
+                  onClick={() =>
+                    isYoutubeVideoId(id)
+                      ? handleVideoCardClick(id)
+                      : handlePlaylistCardClick(id)
+                  }
+                >
+                  Start this course!
+                </Button>
               </CardActions>
             </Box>
           </Card>

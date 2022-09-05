@@ -3,9 +3,10 @@ import { PlayerState } from './PlayerState';
 import { Message } from './server-types/chat.model';
 
 export type SocketEventsMap = {
-  'join-room': (roomId: string) => void;
-  'leave-room': (roomId: string) => void;
-  'change-video': (roomId: string, videoId: string) => void;
+  'join-room': (roomName: string, userId: string) => void;
+  'joined-room': () => void;
+  'leave-room': (roomName: string) => void;
+  'change-video': (roomName: string, videoId: string) => void;
   'changed-video': (room: Room) => void;
   'seek-video': (timeInSeconds: number) => void;
   'request-room-player-data': () => void;

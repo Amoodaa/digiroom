@@ -30,6 +30,9 @@ class RoomsRoute implements Routes {
 
     // /room/:roomName/chat
     this.router.get(`/:roomName/chat`, this.roomController.getChat);
+
+    // /room/:roomName/user
+    this.router.post(`/:roomName/user`, this.roomController.addUserToRoom);
   }
 }
 

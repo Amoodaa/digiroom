@@ -1,38 +1,35 @@
 /* eslint-disable no-console */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { baseConfig } from 'baseConfig';
 import { io, Socket } from 'socket.io-client';
 import { SocketEventsMap } from 'digiroom-types';
 
-const socket: Socket<SocketEventsMap> = io(`${baseConfig.API_URL}/youtube`, { transports: ['websocket'] });
-socket.connect();
+const socket: Socket<SocketEventsMap> = io(`${baseConfig.API_URL}/youtube`, {
+  transports: ['websocket'],
+});
 
-export const useConnect = ({ roomName }: { roomName: string }) => {
+type UseConnect = {
+  roomName: string;
+  userId: string;
+};
+
+export const useConnect = ({ roomName, userId }: UseConnect) => {
+  const [isConnected, setIsConnected] = useState(false);
+
   useEffect(() => {
-    socket.emit('join-room', roomName);
+    socket.on('connect', () => {
+      setIsConnected(true);
+    });
 
-    // TODO: disconnect
-    return () => {
-      socket.emit('leave-room', roomName);
-    };
-  }, [roomName]);
-
-  useEffect(() => {
-    const onConnect = () => {
-      console.log('connected');
-    };
-    const onDisconnect = () => {
-      console.log('connected');
-    };
-
-    socket.on('connect', onConnect);
-    socket.on('disconnect', onDisconnect);
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+    });
 
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
+      socket.off('connect');
+      socket.off('disconnect');
     };
   }, []);
 
-  return { roomConnection: socket };
+  return { roomConnection: socket, isConnected };
 };
