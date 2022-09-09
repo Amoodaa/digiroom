@@ -7,7 +7,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useAppDispatch } from 'app/hooks';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { roomActions } from 'slices/room/slice';
 import urlParser from 'js-video-url-parser';
 import type { YouTubeParseResult } from 'js-video-url-parser';
@@ -32,13 +32,14 @@ export const roomNameSchema = yup.object({
 export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const username = useAppSelector(state => state.room.username);
   const roomNameForm = useForm({
-    defaultValues: { roomName: '', username: localStorage.getItem('username') ?? '' },
+    defaultValues: { roomName: '' },
     shouldFocusError: true,
     resolver: yupResolver(roomNameSchema),
   });
 
-  const roomFormOnSubmit = roomNameForm.handleSubmit(async ({ roomName, username }) => {
+  const roomFormOnSubmit = roomNameForm.handleSubmit(async ({ roomName }) => {
     const parsed = urlParser.parse(youtubeUrl) as YouTubeParseResult;
     if (parsed) {
       const result = await dispatch(
