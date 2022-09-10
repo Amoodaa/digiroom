@@ -22,11 +22,15 @@ type Props = {
 };
 
 export const roomNameSchema = yup.object({
-  roomName: yup.string().test(function (val) {
-    if (val && !val.split(' ').length)
-      return this.createError({ message: 'Spaces are not allowed' });
-    return true;
-  }),
+  roomName: yup
+    .string()
+    .test(function (val) {
+      if (val && !val.split(' ').length)
+        return this.createError({ message: 'Spaces are not allowed' });
+      return true;
+    })
+    .min(4, ({ min }) => `Room name must be at least ${min} characters`)
+    .max(16, ({ max }) => `Room name should not exceed ${max} characters`),
 });
 
 export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl }) => {
@@ -35,6 +39,7 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
   const username = useAppSelector(state => state.room.username);
   const roomNameForm = useForm({
     defaultValues: { roomName: '' },
+    reValidateMode: 'onSubmit',
     shouldFocusError: true,
     resolver: yupResolver(roomNameSchema),
   });

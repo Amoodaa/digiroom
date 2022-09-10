@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { roomActions } from 'slices/room/slice';
 
 export const usernameSchema = yup.object({
-  username: yup.string().max(30).min(1).required(),
+  username: yup.string().max(20).min(4).required(),
 });
 
 export const UsernameDialoug: React.FC = () => {
