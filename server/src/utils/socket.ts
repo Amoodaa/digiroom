@@ -44,16 +44,18 @@ export const initializeSocketIOServer = (httpServer: Server) => {
       socket.on('seek-video', timeInSeconds => {
         youtubeTopic.to(roomName).emit('seek-video', timeInSeconds);
       });
-
+      // requesting
       socket.on('request-room-player-data', async () => {
         const connectedSockets = await youtubeTopic.to(roomName).fetchSockets();
-        if (connectedSockets.length > 0) {
-          socket.once('share-room-player-data', playerState => {
-            youtubeTopic.to(roomName).emit('share-room-player-data', playerState);
-          });
-          const [firstSocket] = connectedSockets;
-          firstSocket.emit('request-room-player-data');
+        if (connectedSockets.length > 1) {
+          const secondSocket = connectedSockets.find(e => e.id !== socket.id);
+
+          secondSocket.emit('request-room-player-data');
         }
+      });
+
+      socket.on('share-room-player-data', playerState => {
+        youtubeTopic.to(roomName).emit('share-room-player-data', playerState);
       });
 
       socket.on('send-message', async (roomName, message) => {

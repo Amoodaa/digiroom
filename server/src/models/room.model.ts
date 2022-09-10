@@ -13,8 +13,8 @@ class UserSchema {
   @prop({ required: true, enum: ['online', 'offline', 'typing'] })
   public state: 'online' | 'offline' | 'typing';
 
-  @prop({ required: true, enum: ['owner', 'member'] })
-  public role: 'owner' | 'member';
+  @prop({ required: true, enum: ['admin', 'guest'] })
+  public role: 'admin' | 'guest';
 
   @prop({ default: Date.now })
   public joinedAt?: Date;

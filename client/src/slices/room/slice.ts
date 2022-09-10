@@ -156,9 +156,9 @@ const joinRoom = createAsyncThunk(
     try {
       let { roomData } = await dispatch(getRoom({ roomName })).unwrap();
 
-      const isUsernameMember = roomData.data.users.find(user => user.name === username);
+      const isUsernameguest = roomData.data.users.find(user => user.name === username);
 
-      if (!isUsernameMember) {
+      if (!isUsernameguest) {
         const newRoomData = await dispatch(
           addUserToRoom({ roomName, username }),
         ).unwrap();

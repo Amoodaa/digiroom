@@ -4,7 +4,7 @@ declare class UserSchema {
     name: string;
     socketId?: string;
     state: 'online' | 'offline' | 'typing';
-    role: 'owner' | 'member';
+    role: 'admin' | 'guest';
     joinedAt?: Date;
 }
 export declare class RoomSchema {

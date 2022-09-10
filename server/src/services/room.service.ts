@@ -42,10 +42,10 @@ class RoomService {
       users: [
         {
           name: username,
-          role: 'owner',
+          role: 'admin',
           state: 'offline',
         },
-      ], // TODO: add the first user as an owner
+      ], // TODO: add the first user as an admin
     };
 
     if (playlistId) {
