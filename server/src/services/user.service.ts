@@ -11,7 +11,7 @@ export class UserService {
 
     if (userExists) throw new HttpError(409, `User with ${username} already exists`);
 
-    foundRoom.users.push({ name: username, role: 'member', state: 'offline' });
+    foundRoom.users.push({ name: username, role: 'guest', state: 'offline' });
 
     await foundRoom.save();
 

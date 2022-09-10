@@ -47,6 +47,7 @@ export const UsernameDialoug: React.FC = () => {
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      PaperProps={{ sx: { width: '40%' } }}
     >
       <DialogTitle id="alert-dialog-title">Give yourself a username!</DialogTitle>
       <DialogContent>

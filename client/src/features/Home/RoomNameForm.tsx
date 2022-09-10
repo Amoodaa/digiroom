@@ -62,10 +62,11 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      PaperProps={{ sx: { width: '40%' } }}
     >
       <DialogTitle id="alert-dialog-title">Enter a unique room name!</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText id="alert-dialog-description" sx={{ mb: 3 }}>
           Give your room a unique name!
         </DialogContentText>
         <Controller
@@ -78,7 +79,6 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
               helperText={error?.message}
               fullWidth
               {...field}
-              sx={{ width: '50%', mr: 3 }}
               autoFocus
             />
           )}
