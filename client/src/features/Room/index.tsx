@@ -232,7 +232,7 @@ export const RoomPage = () => {
           height: '95vh',
         }}
       >
-        <Box p={2} width="75%">
+        <Box p={2} width="75%" position="relative">
           <ReactPlayer
             url={currentVideoUrl}
             onReady={roomSync}
@@ -242,6 +242,13 @@ export const RoomPage = () => {
             muted={muted}
             width="100%"
             height="calc(100%)"
+          />
+          <Box
+            height="calc(100%)"
+            position="absolute"
+            top="0"
+            width="100%"
+            onClick={playing ? onPauseClick : onPlayClick}
           />
           <Divider sx={{ my: 2 }} />
         </Box>
