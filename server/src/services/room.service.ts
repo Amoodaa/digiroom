@@ -80,17 +80,21 @@ class RoomService {
     return createRoomData;
   }
 
-  public async changeCurrentVideo(roomName: string, videoId: string): Promise<Room> {
+  public async changeCurrentVideo(
+    roomName: string,
+    videoId: string,
+  ): Promise<Pick<Room, 'currentVideoId' | 'currentVideo'>> {
     const foundRoom = await RoomModel.findOne({ name: roomName });
 
     if (!foundRoom) throw new HttpError(404, "You're not room");
 
     foundRoom.currentVideoId = videoId;
-    foundRoom.currentVideo = await youtubeClient.videos.get(foundRoom.currentVideoId);
+    const newCurrentVideo = await youtubeClient.videos.get(foundRoom.currentVideoId);
+    foundRoom.currentVideo = newCurrentVideo;
 
     await foundRoom.save();
 
-    return foundRoom;
+    return { currentVideoId: videoId, currentVideo: newCurrentVideo };
   }
 
   public async updateRoom(roomId: string, roomData: CreateRoomDto): Promise<Room> {

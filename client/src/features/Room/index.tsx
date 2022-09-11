@@ -81,7 +81,8 @@ export const RoomPage = () => {
   }, [resumePlaying, roomConnection]);
 
   const changedVideoEvent = useCallback(
-    (room: Room) => dispatch(roomActions.changeCurrentVideo(room)),
+    (changedVideoPayload: Pick<Room, 'currentVideoId' | 'currentVideo'>) =>
+      dispatch(roomActions.changeCurrentVideo(changedVideoPayload)),
     [dispatch],
   );
 

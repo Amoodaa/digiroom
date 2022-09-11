@@ -30,8 +30,16 @@ export const roomSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    changeCurrentVideo(state, action: PayloadAction<Room>) {
-      state.room = action.payload;
+    changeCurrentVideo(
+      state,
+      action: PayloadAction<Pick<Room, 'currentVideoId' | 'currentVideo'>>,
+    ) {
+      if (!state.room) return;
+
+      state.room = {
+        ...state.room,
+        ...action.payload,
+      };
     },
     receiveMessage(state, action: PayloadAction<Message>) {
       state.messages.push(action.payload);
