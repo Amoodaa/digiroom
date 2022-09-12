@@ -8,15 +8,16 @@ const socket: Socket<SocketEventsMap> = io(`${baseConfig.API_URL}/youtube`, {
   transports: ['websocket'],
 });
 
-type UseConnect = {
-  roomName: string;
-  userId: string;
-};
+// type UseConnect = {
+//   roomName: string;
+//   userId: string;
+// };
 
-export const useConnect = ({ roomName, userId }: UseConnect) => {
+export const useConnect = () => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    setIsConnected(socket.connected);
     socket.on('connect', () => {
       setIsConnected(true);
     });
@@ -31,5 +32,5 @@ export const useConnect = ({ roomName, userId }: UseConnect) => {
     };
   }, []);
 
-  return { roomConnection: socket, isConnected };
+  return { socket, isConnected };
 };

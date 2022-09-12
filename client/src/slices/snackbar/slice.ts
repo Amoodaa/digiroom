@@ -36,7 +36,9 @@ const snackbarSlice = createSlice({
       action => action.type.endsWith('/rejected'),
       (state, action: UnknownAsyncThunkRejectedAction) => {
         const error = action.payload as AxiosError<ApiError>;
-        const defaultError = { data: { message: 'Network problem probably, if not, contact dev' } };
+        const defaultError = {
+          data: { message: 'Network problem probably, if not, contact dev' },
+        };
         if (error.isAxiosError) {
           const message = (error.response ?? defaultError).data.message;
           state.snacks[message] = {

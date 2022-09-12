@@ -7,7 +7,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { useAppDispatch } from 'app/hooks';
 import { roomActions } from 'slices/room/slice';
 import urlParser from 'js-video-url-parser';
 import type { YouTubeParseResult } from 'js-video-url-parser';
@@ -36,7 +36,6 @@ export const roomNameSchema = yup.object({
 export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const username = useAppSelector(state => state.room.username);
   const roomNameForm = useForm({
     defaultValues: { roomName: '' },
     reValidateMode: 'onSubmit',
@@ -52,11 +51,12 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
           name: roomName,
           playlistId: parsed.list,
           videoId: parsed.id,
-          username,
         }),
       );
-      localStorage.setItem('username', username);
-      if (result.meta.requestStatus === 'fulfilled') navigate(`/${roomName}`);
+      if (result.meta.requestStatus === 'fulfilled')
+        setTimeout(() => {
+          navigate(`/${roomName}`);
+        }, 200);
       // TODO: copy room link into clipboard+
     }
   });

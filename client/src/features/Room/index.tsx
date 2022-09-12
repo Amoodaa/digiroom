@@ -37,8 +37,8 @@ export const RoomPage = () => {
 
   // room state
   const { roomName = '' } = useParams<{ roomName: string }>();
-  const { userId, messages, room, username } = useAppSelector(s => s.room);
-  const { roomConnection, isConnected } = useConnect({ roomName, userId });
+  const { messages, room, username } = useAppSelector(s => s.room);
+  const { socket, isConnected } = useConnect();
 
   // player state
   const youtubePlayer = useRef<ReactPlayer | null>(null);
@@ -55,7 +55,7 @@ export const RoomPage = () => {
 
   // Bunch of event handlers both socket responsive and user actions
   const roomSync = () => {
-    roomConnection.emit('request-room-player-data');
+    socket.emit('request-room-player-data');
   };
 
   const [volume, setVolume] = useState(0);
@@ -69,16 +69,16 @@ export const RoomPage = () => {
   const pausePlaying = useCallback(() => setPlaying(false), []);
 
   const onPauseClick = useCallback(() => {
-    roomConnection.emit('pause-room');
+    socket.emit('pause-room');
     pausePlaying();
-  }, [pausePlaying, roomConnection]);
+  }, [pausePlaying, socket]);
 
   const resumePlaying = useCallback(() => setPlaying(true), []);
 
   const onPlayClick = useCallback(() => {
-    roomConnection.emit('resume-room');
+    socket.emit('resume-room');
     resumePlaying();
-  }, [resumePlaying, roomConnection]);
+  }, [resumePlaying, socket]);
 
   const changedVideoEvent = useCallback(
     (changedVideoPayload: Pick<Room, 'currentVideoId' | 'currentVideo'>) =>
@@ -87,8 +87,8 @@ export const RoomPage = () => {
   );
 
   const changeVideo = useCallback(
-    (videoId: string) => roomConnection.emit('change-video', roomName, videoId),
-    [roomConnection, roomName],
+    (videoId: string) => socket.emit('change-video', roomName, videoId),
+    [socket, roomName],
   );
 
   const onPrevClick = useCallback(() => {
@@ -130,9 +130,9 @@ export const RoomPage = () => {
 
   const onSeek = useCallback(
     (seekTo: number) => {
-      roomConnection.emit('seek-video', seekTo);
+      socket.emit('seek-video', seekTo);
     },
-    [roomConnection],
+    [socket],
   );
 
   // state validators
@@ -141,19 +141,17 @@ export const RoomPage = () => {
       dispatch(
         roomActions.joinRoom({
           roomName,
-          username,
-          joinRoomFn: (roomName, username) =>
-            roomConnection.emit('join-room', roomName, username),
+          callback: username => socket.emit('join-room', roomName, username),
         }),
       );
     }
-  }, [dispatch, isConnected, roomConnection, roomName, username]);
+  }, [dispatch, isConnected, socket, roomName, username]);
 
   // socket events setup and teardown
   useEffect(() => {
     if (isConnected) {
       const shareRoomState = () => {
-        roomConnection.emit('share-room-player-data', {
+        socket.emit('share-room-player-data', {
           currentTime: youtubePlayer.current?.getCurrentTime() ?? 0,
         });
       };
@@ -169,27 +167,34 @@ export const RoomPage = () => {
       };
 
       const getRoom: SocketEventsMap['joined-room'] = () => {
-        dispatch(roomActions.getRoom({ roomName }));
+        // dispatch(roomActions.getRoom(roomName));
+        dispatch(roomActions.getChat(roomName));
       };
 
-      roomConnection.on('joined-room', getRoom);
-      roomConnection.on('resume-room', resumePlaying);
-      roomConnection.on('pause-room', pausePlaying);
-      roomConnection.on('changed-video', changedVideoEvent);
-      roomConnection.on('seek-video', seekVideo);
-      roomConnection.on('request-room-player-data', shareRoomState);
-      roomConnection.on('share-room-player-data', processRoomState);
-      roomConnection.on('receive-message', receiveMessage);
+      const resetRoom = () => {
+        dispatch(roomActions.resetRoom());
+      };
+
+      socket.on('joined-room', getRoom);
+      socket.on('resume-room', resumePlaying);
+      socket.on('pause-room', pausePlaying);
+      socket.on('changed-video', changedVideoEvent);
+      socket.on('seek-video', seekVideo);
+      socket.on('request-room-player-data', shareRoomState);
+      socket.on('share-room-player-data', processRoomState);
+      socket.on('receive-message', receiveMessage);
+      socket.on('leave-room', resetRoom);
 
       return () => {
-        roomConnection.off('joined-room', getRoom);
-        roomConnection.off('resume-room', resumePlaying);
-        roomConnection.off('pause-room', pausePlaying);
-        roomConnection.off('changed-video', changedVideoEvent);
-        roomConnection.off('seek-video', seekVideo);
-        roomConnection.off('request-room-player-data', shareRoomState);
-        roomConnection.off('share-room-player-data', processRoomState);
-        roomConnection.off('receive-message', receiveMessage);
+        socket.off('joined-room', getRoom);
+        socket.off('resume-room', resumePlaying);
+        socket.off('pause-room', pausePlaying);
+        socket.off('changed-video', changedVideoEvent);
+        socket.off('seek-video', seekVideo);
+        socket.off('request-room-player-data', shareRoomState);
+        socket.off('share-room-player-data', processRoomState);
+        socket.off('receive-message', receiveMessage);
+        socket.off('leave-room', resetRoom);
       };
     }
   }, [
@@ -199,7 +204,7 @@ export const RoomPage = () => {
     isConnected,
     pausePlaying,
     resumePlaying,
-    roomConnection,
+    socket,
     seekVideo,
   ]);
 
@@ -365,7 +370,7 @@ export const RoomPage = () => {
                         <IconButton
                           color="primary"
                           onClick={handleSubmit(formdata => {
-                            roomConnection.emit('send-message', roomName, {
+                            socket.emit('send-message', roomName, {
                               message: formdata.messageText,
                               user: username,
                               type: 'chat',
