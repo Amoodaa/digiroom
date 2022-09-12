@@ -20,13 +20,22 @@ import { Controls } from './Controls';
 import { parse, toSeconds } from 'iso8601-duration';
 import { useForm } from 'react-hook-form';
 
-export const ChatMessage: FC<{ chatItem: Message }> = ({ chatItem }) => (
-  <Typography sx={{ overflowWrap: 'anywhere' }}>
-    {chatItem.createdAt && `[${new Date(chatItem.createdAt).toLocaleTimeString()}]`}{' '}
-    {chatItem.type === 'chat' ? `${chatItem.user}: ` : ' '}
-    {chatItem.message}
-  </Typography>
-);
+export const ChatMessage: FC<{ chatItem: Message }> = ({ chatItem }) =>
+  chatItem.type === 'chat' ? (
+    <Typography variant="body1" sx={{ width: '100%', mb: 0.25 }}>
+      {chatItem.createdAt && `[${new Date(chatItem.createdAt).toLocaleTimeString()}]`}{' '}
+      {chatItem.user}: {chatItem.message}
+    </Typography>
+  ) : (
+    <>
+      <Typography
+        sx={{ textAlign: 'center', width: '100%', mb: 0.25 }}
+        variant="subtitle2"
+      >
+        {chatItem.message}
+      </Typography>
+    </>
+  );
 
 export const RoomPage = () => {
   const dispatch = useAppDispatch();
@@ -233,8 +242,7 @@ export const RoomPage = () => {
           display: 'flex',
           justifyContent: 'space-between',
           flexDirection: { xs: 'column', lg: 'row' },
-          height: { xs: '120vh', lg: '95vh' },
-          maxHeight: '95vh',
+          height: { xs: '120vh', lg: '94vh' },
         }}
       >
         <Box
@@ -266,7 +274,7 @@ export const RoomPage = () => {
           display="flex"
           alignItems="center"
           flexDirection="column"
-          maxHeight={{ lg: '85vh' }}
+          maxHeight={{ lg: '94vh' }}
           width={{ xs: '100%', lg: '25%' }}
         >
           <Box
