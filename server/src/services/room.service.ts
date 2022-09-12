@@ -76,7 +76,11 @@ class RoomService {
     newRoom.currentVideo = await youtubeClient.videos.get(newRoom.currentVideoId);
 
     const createRoomData = await RoomModel.create(newRoom);
-
+    await this.sendMessageToRoom(name, {
+      message: `${username} has created the room`,
+      user: username,
+      type: 'action',
+    });
     return createRoomData;
   }
 
@@ -143,9 +147,8 @@ class RoomService {
     // chat model can be so big, why do i wanna download it?
     await ChatModel.updateOne(
       { room: room._id },
-      {
-        $push: { messages: message },
-      },
+      { room: room._id, $push: { messages: message } },
+      { upsert: true },
     );
   }
 }

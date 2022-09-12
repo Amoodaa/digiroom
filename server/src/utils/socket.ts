@@ -22,7 +22,9 @@ export const initializeSocketIOServer = (httpServer: Server) => {
     socket.on('join-room', async (roomName, username) => {
       const sendMessageToRoom = async (roomName: string, message: Message) => {
         await roomService.sendMessageToRoom(roomName, message);
-        youtubeTopic.to(roomName).emit('receive-message', message);
+        youtubeTopic
+          .to(roomName)
+          .emit('receive-message', { ...message, createdAt: new Date() });
       };
 
       socket.join(roomName);
