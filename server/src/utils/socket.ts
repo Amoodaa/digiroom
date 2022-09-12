@@ -4,6 +4,7 @@ import { CREDENTIALS, ORIGIN } from '@/config';
 import { Server } from 'http';
 import { roomService } from '@/services/room.service';
 import { userService } from '@/services/user.service';
+import { Message } from '@/models/chat.model';
 
 export let io: SocketServer<SocketEventsMap> = null;
 
@@ -19,13 +20,21 @@ export const initializeSocketIOServer = (httpServer: Server) => {
 
   youtubeTopic.on('connection', socket => {
     socket.on('join-room', async (roomName, username) => {
+      const sendMessageToRoom = async (roomName: string, message: Message) => {
+        await roomService.sendMessageToRoom(roomName, message);
+        youtubeTopic.to(roomName).emit('receive-message', message);
+      };
+
       socket.join(roomName);
       await userService.joinRoom(roomName, username, socket.id);
-      await roomService.sendMessageToRoom(roomName, {
+
+      const joinMessage: Message = {
         user: username,
         message: `${username} has joined the room`,
         type: 'action',
-      });
+      };
+      await sendMessageToRoom(roomName, joinMessage);
+
       socket.emit('joined-room');
 
       socket.on('pause-room', () => {
@@ -58,15 +67,11 @@ export const initializeSocketIOServer = (httpServer: Server) => {
         youtubeTopic.to(roomName).emit('share-room-player-data', playerState);
       });
 
-      socket.on('send-message', async (roomName, message) => {
-        await roomService.sendMessageToRoom(roomName, message);
-        console.log('why twice');
-        youtubeTopic.to(roomName).emit('receive-message', message);
-      });
+      socket.on('send-message', sendMessageToRoom);
 
       socket.on('disconnect', async () => {
         const { name } = await userService.leaveRoom(roomName, socket.id);
-        await roomService.sendMessageToRoom(roomName, {
+        await sendMessageToRoom(roomName, {
           user: name,
           message: `${name} has left the room`,
           type: 'action',
