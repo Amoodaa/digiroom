@@ -18,7 +18,7 @@ export const Header = ({ roomName = '' }) => {
             variant="h5"
             noWrap
             component="div"
-            sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+            sx={{ mr: 2, display: 'flex' }}
             onClick={() => dispatch(roomActions.resetRoom())}
           >
             <Link

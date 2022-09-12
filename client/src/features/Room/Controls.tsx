@@ -49,7 +49,7 @@ type Props = {
 function formatDuration(value: number) {
   const minute = Math.floor(value / 60);
   const secondLeft = value - minute * 60;
-  return `${minute}:${secondLeft < 9 ? `0${secondLeft}` : secondLeft}`;
+  return `${minute}:${secondLeft < 10 ? `0${secondLeft}` : secondLeft}`;
 }
 
 export const Controls: React.FC<Props> = ({
@@ -138,8 +138,15 @@ export const Controls: React.FC<Props> = ({
             mt: -1,
           }}
         >
-          <IconButton aria-label="mute video">
-            <VolumeOffIcon fontSize="large" htmlColor={mainIconColor} />
+          <IconButton
+            aria-label="mute video"
+            onClick={volume ? () => onVolumeChange(0) : () => onVolumeChange(50)}
+          >
+            {volume ? (
+              <VolumeUpRounded fontSize="large" htmlColor={mainIconColor} />
+            ) : (
+              <VolumeOffIcon fontSize="large" htmlColor={mainIconColor} />
+            )}
           </IconButton>
           <IconButton aria-label="previous song" onClick={onPrevClick}>
             <FastRewindRounded fontSize="large" htmlColor={mainIconColor} />

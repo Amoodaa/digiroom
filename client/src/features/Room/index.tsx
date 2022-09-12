@@ -11,21 +11,17 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
 import { useParams } from 'react-router';
 import urlParser from 'js-video-url-parser';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { Header } from '../../components/Header';
 import { roomActions } from 'slices/room/slice';
-import { Breakpoint, Button } from '@mui/material';
+import { Breakpoint, Button, Tab, Tabs } from '@mui/material';
 import { Message, Room, SocketEventsMap } from 'digiroom-types';
 import { Controls } from './Controls';
 import { parse, toSeconds } from 'iso8601-duration';
 import { useForm } from 'react-hook-form';
 
 export const ChatMessage: FC<{ chatItem: Message }> = ({ chatItem }) => (
-  <Typography>
+  <Typography sx={{ overflowWrap: 'anywhere' }}>
     {chatItem.createdAt && `[${new Date(chatItem.createdAt).toLocaleTimeString()}]`}{' '}
     {chatItem.type === 'chat' ? `${chatItem.user}: ` : ' '}
     {chatItem.message}
@@ -34,7 +30,7 @@ export const ChatMessage: FC<{ chatItem: Message }> = ({ chatItem }) => (
 
 export const RoomPage = () => {
   const dispatch = useAppDispatch();
-
+  const [tab, setTab] = useState<'chat' | 'playlist'>('chat');
   // room state
   const { roomName = '' } = useParams<{ roomName: string }>();
   const { messages, room, username } = useAppSelector(s => s.room);
@@ -236,11 +232,17 @@ export const RoomPage = () => {
           p: 2,
           display: 'flex',
           justifyContent: 'space-between',
-          flexDirection: { sm: 'column', lg: 'row' },
-          height: '95vh',
+          flexDirection: { xs: 'column', lg: 'row' },
+          height: { xs: '120vh', lg: '95vh' },
+          maxHeight: '95vh',
         }}
       >
-        <Box p={2} width="75%" position="relative">
+        <Box
+          p={2}
+          width={{ xs: '100%', lg: '75%' }}
+          height={{ xs: '50%', lg: '100%' }}
+          position="relative"
+        >
           <ReactPlayer
             url={currentVideoUrl}
             onReady={roomSync}
@@ -262,15 +264,15 @@ export const RoomPage = () => {
         </Box>
         <Box
           display="flex"
-          justifyContent="space-between"
           alignItems="center"
           flexDirection="column"
-          maxHeight="90vh"
+          maxHeight={{ lg: '85vh' }}
+          width={{ xs: '100%', lg: '25%' }}
         >
           <Box
             sx={{
-              height: '20vh',
-              width: '90%',
+              height: { lg: '20%' },
+              width: '100%',
             }}
           >
             <Controls
@@ -287,84 +289,66 @@ export const RoomPage = () => {
               onPrevClick={onPrevClick}
             />
           </Box>
-          <Accordion
+          <Box
             sx={{
+              height: { xs: '60vh', lg: '80%' },
               width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>Current playlist</Typography>
-            </AccordionSummary>
-            <AccordionDetails
+            <Box
               sx={{
-                width: '100%',
-                maxHeight: '50vh',
-                overflow: 'scroll',
+                borderBottom: 1,
+                borderColor: 'divider',
+                display: 'flex',
               }}
             >
-              <Box
-                sx={{
-                  height: '100%',
-                }}
-              >
-                {room.currentPlaylistItems &&
-                  room.currentPlaylistItems.items.map(e => (
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      width="100%"
-                      key={e.id}
-                    >
-                      <Typography>{e.snippet.title}</Typography>
-                      <Button onClick={() => changeVideo(e.contentDetails.videoId)}>
-                        Change Video
-                      </Button>
-                    </Box>
-                  ))}
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion
-            defaultExpanded
-            sx={{
-              width: '100%',
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel2a-content"
-              id="panel2a-header"
+              <Tabs value={tab} onChange={(e, value) => setTab(value)}>
+                <Tab label="Chat" value="chat" />
+                <Tab label="Playlist" value="playlist" />
+              </Tabs>
+            </Box>
+            <Paper
+              sx={{
+                width: '100%',
+                p: 2,
+                height: '100%',
+                overflowY: 'scroll',
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexDirection: 'column',
+              }}
             >
-              <Typography>Chat</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Paper variant="outlined">
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="flex-end"
-                  p={2}
-                  component="form"
-                >
+              {tab === 'playlist' &&
+                room.currentPlaylistItems &&
+                room.currentPlaylistItems.items.map(e => (
                   <Box
-                    mb={3}
-                    maxHeight="25vh"
-                    sx={{
-                      overflowY: 'scroll',
-                    }}
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mx={{ lg: 2 }}
+                    key={e.id}
                   >
+                    <Typography>{e.snippet.title}</Typography>
+                    <Button
+                      onClick={() => changeVideo(e.contentDetails.videoId)}
+                      sx={{ wordWrap: 'normal' }}
+                    >
+                      Change Video
+                    </Button>
+                  </Box>
+                ))}
+
+              {tab === 'chat' && (
+                <>
+                  <Box mb={3} sx={{ overflowY: 'scroll', maxHeight: '90%' }}>
                     {messages.map(msg => (
                       <ChatMessage chatItem={msg} key={JSON.stringify(msg)} />
                     ))}
                   </Box>
-
                   <TextField
-                    sx={{ justifySelf: 'flex-end' }}
+                    sx={{ justifySelf: 'flex-end', width: '100%' }}
                     placeholder="Send a message"
                     variant="standard"
                     InputProps={{
@@ -385,10 +369,10 @@ export const RoomPage = () => {
                     }}
                     {...register('messageText')}
                   />
-                </Box>
-              </Paper>
-            </AccordionDetails>
-          </Accordion>
+                </>
+              )}
+            </Paper>
+          </Box>
         </Box>
       </Container>
     </>
