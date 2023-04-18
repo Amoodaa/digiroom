@@ -4,6 +4,7 @@
  * --------------------------------
  */
 // Style Components
+import { ThemeProvider } from '@mui/material/styles';
 import { styled, useTheme } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -53,6 +54,7 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import SendIcon from '@mui/icons-material/Send';
 
 export {
+  ThemeProvider,
   styled,
   useTheme,
   red,
