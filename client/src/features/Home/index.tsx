@@ -1,8 +1,7 @@
-import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
+import { Container, Divider } from 'components/MaterialUI';
 import { Searchbar } from './Searchbar';
 import { SearchResults } from './SearchResults';
-import { Header } from '../../components/Header';
+import { Header } from 'components/Header';
 import { NewRoomForm } from './NewRoomForm';
 import { useState } from 'react';
 import { RoomNameForm } from './RoomNameForm';

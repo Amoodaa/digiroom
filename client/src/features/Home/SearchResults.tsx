@@ -1,10 +1,12 @@
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Button from '@mui/material/Button';
+import {
+  Box,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  CardActions,
+  Button,
+} from 'components/MaterialUI';
 import { FC } from 'react';
 import { examplePlaylistSearch } from './data';
 import { useAppSelector } from 'app/hooks';

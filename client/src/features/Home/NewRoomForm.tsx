@@ -1,6 +1,4 @@
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
+import { Box, Button, TextField } from 'components/MaterialUI';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { youtubeUrlSchema } from 'utils/validation.util';

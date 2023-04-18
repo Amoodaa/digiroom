@@ -1,12 +1,14 @@
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import { Controller, useForm } from 'react-hook-form';
 import React from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  TextField,
+  Button,
+} from 'components/MaterialUI';
 import { useAppDispatch } from 'app/hooks';
 import { roomActions } from 'slices/room/slice';
 import urlParser from 'js-video-url-parser';

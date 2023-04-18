@@ -1,12 +1,14 @@
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
 import { Controller, useForm } from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+} from 'components/MaterialUI';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { roomActions } from 'slices/room/slice';
