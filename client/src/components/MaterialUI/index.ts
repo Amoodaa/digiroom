@@ -20,6 +20,9 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
+// Navigation Components
+import { Link } from '@mui/material';
+
 // Surface Components
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -66,6 +69,7 @@ export {
   ToggleButtonGroup,
   Divider,
   Typography,
+  Link,
   Card,
   CardMedia,
   CardContent,

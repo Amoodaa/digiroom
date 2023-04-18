@@ -1,6 +1,5 @@
-import { Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { AppBar, Container, Toolbar, Typography } from 'components/MaterialUI';
+import { Link, AppBar, Container, Toolbar, Typography } from 'components/MaterialUI';
 import { useAppDispatch } from 'app/hooks';
 import { roomActions } from 'slices/room/slice';
 

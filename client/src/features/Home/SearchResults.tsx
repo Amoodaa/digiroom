@@ -1,3 +1,9 @@
+import { FC } from 'react';
+import { YoutubePlaylistSearchItem, YoutubeVideoSearchItem } from 'youtube.ts';
+import urlParser from 'js-video-url-parser';
+import { VideoInfo } from 'js-video-url-parser/lib/urlParser';
+import { useAppSelector } from 'app/hooks';
+import { examplePlaylistSearch } from './data';
 import {
   Box,
   Card,
@@ -7,12 +13,6 @@ import {
   CardActions,
   Button,
 } from 'components/MaterialUI';
-import { FC } from 'react';
-import { examplePlaylistSearch } from './data';
-import { useAppSelector } from 'app/hooks';
-import { YoutubePlaylistSearchItem, YoutubeVideoSearchItem } from 'youtube.ts';
-import urlParser from 'js-video-url-parser';
-import { VideoInfo } from 'js-video-url-parser/lib/urlParser';
 
 const isYoutubeVideoId = (
   id: (YoutubeVideoSearchItem | YoutubePlaylistSearchItem)['id'],

@@ -1,8 +1,8 @@
-import { Box, Button, TextField } from 'components/MaterialUI';
+import { FC } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Box, Button, TextField } from 'components/MaterialUI';
 import { youtubeUrlSchema } from 'utils/validation.util';
-import { FC } from 'react';
 
 type YoutubeUrlForm = {
   youtubeUrl: string;

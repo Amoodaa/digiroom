@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Room } from 'digiroom-types';
 import {
   styled,
   useTheme,
@@ -16,7 +17,6 @@ import {
   CloudSyncIcon,
   VolumeDownRounded,
 } from 'components/MaterialUI';
-import { Room } from 'digiroom-types';
 
 const Widget = styled('div')(({ theme }) => ({
   borderRadius: 16,

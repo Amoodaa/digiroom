@@ -1,5 +1,9 @@
-import { Controller, useForm } from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { roomActions } from 'slices/room/slice';
+import { usernameSchema } from 'utils/validation.util';
 import {
   TextField,
   Button,
@@ -9,10 +13,6 @@ import {
   DialogActions,
   DialogContentText,
 } from 'components/MaterialUI';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { roomActions } from 'slices/room/slice';
-import { usernameSchema } from 'utils/validation.util';
 
 export const UsernameDialoug: React.FC = () => {
   const dispatch = useAppDispatch();

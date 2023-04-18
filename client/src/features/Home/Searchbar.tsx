@@ -1,3 +1,9 @@
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useAppDispatch } from 'app/hooks';
+import { searchActions } from 'slices/search/slice';
+import { YoutubeSearchForm } from 'slices/search/types';
+import { youtubeSearchSchema } from 'utils/validation.util';
 import {
   Box,
   ToggleButtonGroup,
@@ -5,11 +11,6 @@ import {
   TextField,
   Button,
 } from 'components/MaterialUI';
-import { Controller, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useAppDispatch } from 'app/hooks';
-import { searchActions, YoutubeSearchForm } from 'slices/search/slice';
-import { youtubeSearchSchema } from 'utils/validation.util';
 
 export function Searchbar() {
   const dispatch = useAppDispatch();

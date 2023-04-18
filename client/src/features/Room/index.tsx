@@ -1,3 +1,8 @@
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router';
+import ReactPlayer from 'react-player/youtube';
+import urlParser from 'js-video-url-parser';
+import { useAppDispatch, useAppSelector, useConnect } from 'app/hooks';
 import {
   Typography,
   Container,
@@ -8,11 +13,6 @@ import {
   IconButton,
   SendIcon,
 } from 'components/MaterialUI';
-import { useAppDispatch, useAppSelector, useConnect } from 'app/hooks';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import ReactPlayer from 'react-player/youtube';
-import { useParams } from 'react-router';
-import urlParser from 'js-video-url-parser';
 
 import { Header } from '../../components/Header';
 import { roomActions } from 'slices/room/slice';
