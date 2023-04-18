@@ -3,16 +3,8 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { youtubeUrlRegex } from 'utils/regex.util';
+import { youtubeUrlSchema } from 'utils/validation.util';
 import { FC } from 'react';
-
-export const youtubeUrlSchema = yup.object({
-  youtubeUrl: yup
-    .string()
-    .matches(youtubeUrlRegex, 'Please provide a valid youtube url!')
-    .required('Please provide a youtube url to start a room!'),
-});
 
 type YoutubeUrlForm = {
   youtubeUrl: string;

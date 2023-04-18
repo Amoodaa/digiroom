@@ -8,13 +8,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { roomActions } from 'slices/room/slice';
-
-export const usernameSchema = yup.object({
-  username: yup.string().max(20).min(4).required(),
-});
+import { usernameSchema } from 'utils/validation.util';
 
 export const UsernameDialoug: React.FC = () => {
   const dispatch = useAppDispatch();

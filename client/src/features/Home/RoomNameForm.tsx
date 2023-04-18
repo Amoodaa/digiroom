@@ -13,25 +13,13 @@ import urlParser from 'js-video-url-parser';
 import type { YouTubeParseResult } from 'js-video-url-parser';
 import { useNavigate } from 'react-router';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { roomNameSchema } from 'utils/validation.util';
 
 type Props = {
   open: boolean;
   handleClose: () => void;
   youtubeUrl: string;
 };
-
-export const roomNameSchema = yup.object({
-  roomName: yup
-    .string()
-    .test(function (val) {
-      if (val && !val.split(' ').length)
-        return this.createError({ message: 'Spaces are not allowed' });
-      return true;
-    })
-    .min(4, ({ min }) => `Room name must be at least ${min} characters`)
-    .max(16, ({ max }) => `Room name should not exceed ${max} characters`),
-});
 
 export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl }) => {
   const dispatch = useAppDispatch();
