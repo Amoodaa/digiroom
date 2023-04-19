@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ApiResponse, CreateRoomDto, Room, Chat } from 'digiroom-types';
-import { axios } from 'utils/axios.util';
 import { RootState } from 'app/store';
+import { axios } from 'utils/axios.util';
+import { API_ENDPOINTS } from 'utils/constants/endpoints.constant';
 
 export const createRoom = createAsyncThunk(
   `${createSlice.name}/createRoom`,
   async (payload: Omit<CreateRoomDto, 'username'>, { rejectWithValue, getState }) => {
     try {
       const username = (getState() as RootState).room.username;
-      const { data } = await axios.post<ApiResponse<Room>>('/room', {
+      const { data } = await axios.post<ApiResponse<Room>>(API_ENDPOINTS.CREATE_ROOM, {
         ...payload,
         username,
       });
@@ -27,7 +28,9 @@ export const getRoom = createAsyncThunk(
   `${createSlice.name}/getRoom`,
   async (roomName: string, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get<ApiResponse<Room>>(`/room/${roomName}`);
+      const { data } = await axios.get<ApiResponse<Room>>(
+        API_ENDPOINTS.GET_ROOM(roomName),
+      );
 
       return data;
     } catch (e) {
@@ -40,7 +43,9 @@ export const getChat = createAsyncThunk(
   `${createSlice.name}/getChat`,
   async (roomName: string, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get<ApiResponse<Chat>>(`/room/${roomName}/chat`);
+      const { data } = await axios.get<ApiResponse<Chat>>(
+        API_ENDPOINTS.GET_CHAT(roomName),
+      );
 
       return data;
     } catch (e) {
@@ -56,9 +61,12 @@ export const addUserToRoom = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const { data } = await axios.post<ApiResponse<Room>>(`/room/${roomName}/user`, {
-        username,
-      });
+      const { data } = await axios.post<ApiResponse<Room>>(
+        API_ENDPOINTS.ADD_USER_TO_ROOM(roomName),
+        {
+          username,
+        },
+      );
 
       const userId = data.data.users.find(user => user.name === username)?._id ?? '';
 
