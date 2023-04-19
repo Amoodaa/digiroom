@@ -1,11 +1,10 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { ApiResponse, CreateRoomDto, Room, Chat } from 'digiroom-types';
 import { axios } from 'utils/axios.util';
 import { RootState } from 'app/store';
-import { roomSlice } from './slice';
 
 export const createRoom = createAsyncThunk(
-  `${roomSlice.name}/createRoom`,
+  `${createSlice.name}/createRoom`,
   async (payload: Omit<CreateRoomDto, 'username'>, { rejectWithValue, getState }) => {
     try {
       const username = (getState() as RootState).room.username;
@@ -25,7 +24,7 @@ export const createRoom = createAsyncThunk(
 );
 
 export const getRoom = createAsyncThunk(
-  `${roomSlice.name}/getRoom`,
+  `${createSlice.name}/getRoom`,
   async (roomName: string, { rejectWithValue }) => {
     try {
       const { data } = await axios.get<ApiResponse<Room>>(`/room/${roomName}`);
@@ -38,7 +37,7 @@ export const getRoom = createAsyncThunk(
 );
 
 export const getChat = createAsyncThunk(
-  `${roomSlice.name}/getChat`,
+  `${createSlice.name}/getChat`,
   async (roomName: string, { rejectWithValue }) => {
     try {
       const { data } = await axios.get<ApiResponse<Chat>>(`/room/${roomName}/chat`);
@@ -51,7 +50,7 @@ export const getChat = createAsyncThunk(
 );
 
 export const addUserToRoom = createAsyncThunk(
-  `${roomSlice.name}/addUserToRoom`,
+  `${createSlice.name}/addUserToRoom`,
   async (
     { roomName, username }: { roomName: string; username: string },
     { rejectWithValue },
@@ -73,7 +72,7 @@ export const addUserToRoom = createAsyncThunk(
 );
 
 export const joinRoom = createAsyncThunk(
-  `${roomSlice.name}/joinRoom`,
+  `${createSlice.name}/joinRoom`,
   async (
     { roomName, callback }: { roomName: string; callback: (username: string) => void },
     { rejectWithValue, dispatch, getState },

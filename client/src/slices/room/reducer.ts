@@ -2,6 +2,7 @@ import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { createRoom, getRoom, getChat, addUserToRoom, joinRoom } from './thunk';
 import { RoomState } from './types';
 
+//TODO: Handle rejected state
 export const extraReducers = (builder: ActionReducerMapBuilder<RoomState>) => {
   builder.addCase(createRoom.fulfilled, (state, action) => {
     state.state = 'disconnected';
