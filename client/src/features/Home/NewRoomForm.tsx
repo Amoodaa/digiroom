@@ -8,16 +8,18 @@ type YoutubeUrlForm = {
   youtubeUrl: string;
 };
 
-export const NewRoomForm: FC<{ onSubmit: (formData: YoutubeUrlForm) => void }> = ({
-  onSubmit,
-}) => {
-  const youtubeUrlForm = useForm<YoutubeUrlForm>({
+interface Props {
+  onSubmit: (formData: YoutubeUrlForm) => void;
+}
+
+export const NewRoomForm: FC<Props> = ({ onSubmit }) => {
+  const { control, handleSubmit } = useForm<YoutubeUrlForm>({
     defaultValues: { youtubeUrl: '' },
     shouldFocusError: true,
     resolver: yupResolver(youtubeUrlSchema),
   });
 
-  const youtubeFormOnSubmit = youtubeUrlForm.handleSubmit(formData => {
+  const youtubeFormOnSubmit = handleSubmit(formData => {
     onSubmit(formData);
   });
 
@@ -25,7 +27,7 @@ export const NewRoomForm: FC<{ onSubmit: (formData: YoutubeUrlForm) => void }> =
     <>
       <Box component="form" display="flex" justifyContent="center">
         <Controller
-          control={youtubeUrlForm.control}
+          control={control}
           name="youtubeUrl"
           render={({ field, fieldState: { error } }) => (
             <TextField

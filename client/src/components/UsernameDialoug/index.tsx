@@ -14,29 +14,33 @@ import {
   DialogContentText,
 } from 'components/MaterialUI';
 
+type FormValues = {
+  username: string;
+};
+
 export const UsernameDialoug: React.FC = () => {
   const dispatch = useAppDispatch();
   const username = useAppSelector(state => state.room.username);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!username);
 
   useEffect(() => {
-    if (!username) setOpen(true);
+    setOpen(!username);
   }, [username]);
 
-  const usernameForm = useForm({
+  const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: { username },
     shouldFocusError: true,
     resolver: yupResolver(usernameSchema),
   });
 
-  const usernameFormOnSubmit = usernameForm.handleSubmit(({ username }) => {
-    localStorage.setItem('username', username);
-    dispatch(roomActions.setUsername(username));
+  const onSubmit = (data: FormValues) => {
+    localStorage.setItem('username', data.username);
+    dispatch(roomActions.setUsername(data.username));
     setOpen(false);
-  });
+  };
 
   const handleClose = async () => {
-    await usernameForm.trigger('username', { shouldFocus: true });
+    await handleSubmit(onSubmit)();
   };
 
   return (
@@ -53,7 +57,7 @@ export const UsernameDialoug: React.FC = () => {
           You only have to add this once
         </DialogContentText>
         <Controller
-          control={usernameForm.control}
+          control={control}
           name="username"
           render={({ field, fieldState: { error } }) => (
             <TextField
@@ -68,7 +72,7 @@ export const UsernameDialoug: React.FC = () => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={usernameFormOnSubmit}>Save</Button>
+        <Button onClick={handleSubmit(onSubmit)}>Save</Button>
       </DialogActions>
     </Dialog>
   );
