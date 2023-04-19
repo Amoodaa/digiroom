@@ -1,16 +1,18 @@
-import SendIcon from '@mui/icons-material/Send';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import { useAppDispatch, useAppSelector, useConnect } from 'app/hooks';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import ReactPlayer from 'react-player/youtube';
 import { useParams } from 'react-router';
+import ReactPlayer from 'react-player/youtube';
 import urlParser from 'js-video-url-parser';
+import { useAppDispatch, useAppSelector, useConnect } from 'app/hooks';
+import {
+  Typography,
+  Container,
+  Box,
+  Divider,
+  Paper,
+  TextField,
+  IconButton,
+  SendIcon,
+} from 'components/MaterialUI';
 
 import { Header } from '../../components/Header';
 import { roomActions } from 'slices/room/slice';

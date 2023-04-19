@@ -1,44 +1,46 @@
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { Controller, useForm } from 'react-hook-form';
 import React, { useEffect, useState } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { roomActions } from 'slices/room/slice';
+import { usernameSchema } from 'utils/validation.util';
+import {
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+} from 'components/MaterialUI';
 
-export const usernameSchema = yup.object({
-  username: yup.string().max(20).min(4).required(),
-});
+type FormValues = {
+  username: string;
+};
 
 export const UsernameDialoug: React.FC = () => {
   const dispatch = useAppDispatch();
   const username = useAppSelector(state => state.room.username);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!username);
 
   useEffect(() => {
-    if (!username) setOpen(true);
+    setOpen(!username);
   }, [username]);
 
-  const usernameForm = useForm({
+  const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: { username },
     shouldFocusError: true,
     resolver: yupResolver(usernameSchema),
   });
 
-  const usernameFormOnSubmit = usernameForm.handleSubmit(({ username }) => {
-    localStorage.setItem('username', username);
-    dispatch(roomActions.setUsername(username));
+  const onSubmit = (data: FormValues) => {
+    localStorage.setItem('username', data.username);
+    dispatch(roomActions.setUsername(data.username));
     setOpen(false);
-  });
+  };
 
   const handleClose = async () => {
-    await usernameForm.trigger('username', { shouldFocus: true });
+    await handleSubmit(onSubmit)();
   };
 
   return (
@@ -55,7 +57,7 @@ export const UsernameDialoug: React.FC = () => {
           You only have to add this once
         </DialogContentText>
         <Controller
-          control={usernameForm.control}
+          control={control}
           name="username"
           render={({ field, fieldState: { error } }) => (
             <TextField
@@ -70,7 +72,7 @@ export const UsernameDialoug: React.FC = () => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={usernameFormOnSubmit}>Save</Button>
+        <Button onClick={handleSubmit(onSubmit)}>Save</Button>
       </DialogActions>
     </Dialog>
   );

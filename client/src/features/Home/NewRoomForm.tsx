@@ -1,33 +1,25 @@
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
+import { FC } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { youtubeUrlRegex } from 'utils/regex.util';
-import { FC } from 'react';
-
-export const youtubeUrlSchema = yup.object({
-  youtubeUrl: yup
-    .string()
-    .matches(youtubeUrlRegex, 'Please provide a valid youtube url!')
-    .required('Please provide a youtube url to start a room!'),
-});
+import { Box, Button, TextField } from 'components/MaterialUI';
+import { youtubeUrlSchema } from 'utils/validation.util';
 
 type YoutubeUrlForm = {
   youtubeUrl: string;
 };
 
-export const NewRoomForm: FC<{ onSubmit: (formData: YoutubeUrlForm) => void }> = ({
-  onSubmit,
-}) => {
-  const youtubeUrlForm = useForm<YoutubeUrlForm>({
+interface Props {
+  onSubmit: (formData: YoutubeUrlForm) => void;
+}
+
+export const NewRoomForm: FC<Props> = ({ onSubmit }) => {
+  const { control, handleSubmit } = useForm<YoutubeUrlForm>({
     defaultValues: { youtubeUrl: '' },
     shouldFocusError: true,
     resolver: yupResolver(youtubeUrlSchema),
   });
 
-  const youtubeFormOnSubmit = youtubeUrlForm.handleSubmit(formData => {
+  const youtubeFormOnSubmit = handleSubmit(formData => {
     onSubmit(formData);
   });
 
@@ -35,7 +27,7 @@ export const NewRoomForm: FC<{ onSubmit: (formData: YoutubeUrlForm) => void }> =
     <>
       <Box component="form" display="flex" justifyContent="center">
         <Controller
-          control={youtubeUrlForm.control}
+          control={control}
           name="youtubeUrl"
           render={({ field, fieldState: { error } }) => (
             <TextField

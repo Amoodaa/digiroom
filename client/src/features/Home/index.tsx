@@ -1,10 +1,9 @@
-import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
+import { useState } from 'react';
+import { Header } from 'components/Header';
+import { Container, Divider } from 'components/MaterialUI';
 import { Searchbar } from './Searchbar';
 import { SearchResults } from './SearchResults';
-import { Header } from '../../components/Header';
 import { NewRoomForm } from './NewRoomForm';
-import { useState } from 'react';
 import { RoomNameForm } from './RoomNameForm';
 
 export const Home = () => {

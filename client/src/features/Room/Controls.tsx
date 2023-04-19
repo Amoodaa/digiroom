@@ -1,19 +1,22 @@
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Slider from '@mui/material/Slider';
-import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
-import PauseRounded from '@mui/icons-material/PauseRounded';
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded';
-import FastForwardRounded from '@mui/icons-material/FastForwardRounded';
-import FastRewindRounded from '@mui/icons-material/FastRewindRounded';
-import VolumeUpRounded from '@mui/icons-material/VolumeUpRounded';
-import VolumeDownRounded from '@mui/icons-material/VolumeDownRounded';
-import CloudSyncIcon from '@mui/icons-material/CloudSync';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import { Room } from 'digiroom-types';
+import {
+  styled,
+  useTheme,
+  Typography,
+  Box,
+  Stack,
+  Slider,
+  IconButton,
+  VolumeUpRounded,
+  VolumeOffIcon,
+  FastRewindRounded,
+  PauseRounded,
+  PlayArrowRounded,
+  FastForwardRounded,
+  CloudSyncIcon,
+  VolumeDownRounded,
+} from 'components/MaterialUI';
 
 const Widget = styled('div')(({ theme }) => ({
   borderRadius: 16,
