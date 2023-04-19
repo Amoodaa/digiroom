@@ -3,7 +3,7 @@ import { YoutubePlaylistSearchItem, YoutubeVideoSearchItem } from 'youtube.ts';
 import urlParser from 'js-video-url-parser';
 import { VideoInfo } from 'js-video-url-parser/lib/urlParser';
 import { useAppSelector } from 'app/hooks';
-import { examplePlaylistSearch } from './data';
+import { examplePlaylistSearch } from 'utils/constants/playlistSearch.constant';
 import {
   Box,
   Card,
