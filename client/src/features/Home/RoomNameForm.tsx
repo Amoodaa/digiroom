@@ -43,6 +43,11 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
     resolver: yupResolver(roomNameSchema),
   });
 
+  const generateRandomRoomName = () => {
+    const randomName = Math.random().toString(36).substring(2, 8);
+    roomNameForm.setValue('roomName', randomName);
+  };
+
   const roomFormOnSubmit = roomNameForm.handleSubmit(async ({ roomName }) => {
     const parsed = urlParser.parse(youtubeUrl) as YouTubeParseResult;
     if (parsed) {
@@ -77,16 +82,28 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
         <Controller
           control={roomNameForm.control}
           name="roomName"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              label="Your room name"
-              error={!!error}
-              helperText={error?.message}
-              fullWidth
-              {...field}
-              autoFocus
-            />
-          )}
+          render={({ field: { value, onChange }, fieldState: { error } }) => {
+            return (
+              <>
+                <TextField
+                  label="Your room name"
+                  error={!!error}
+                  helperText={error?.message}
+                  fullWidth
+                  value={value}
+                  onChange={onChange}
+                  autoFocus
+                />
+                <Button
+                  onClick={generateRandomRoomName}
+                  sx={{ mt: 2 }}
+                  variant="contained"
+                >
+                  Random Name
+                </Button>
+              </>
+            );
+          }}
         />
       </DialogContent>
       <DialogActions>
