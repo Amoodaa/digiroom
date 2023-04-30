@@ -43,9 +43,11 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
     resolver: yupResolver(roomNameSchema),
   });
 
-  const generateRandomRoomName = () => {
-    const randomName = Math.random().toString(36).substring(2, 8);
-    roomNameForm.setValue('roomName', randomName);
+  const generateRandomRoomName = async () => {
+    const roomName = Math.random().toString(36).substring(2, 8);
+    const validatedName = await roomNameSchema.validate({ roomName });
+    if (validatedName.roomName) roomNameForm.setValue('roomName', validatedName.roomName);
+    else generateRandomRoomName();
   };
 
   const roomFormOnSubmit = roomNameForm.handleSubmit(async ({ roomName }) => {
