@@ -1,4 +1,5 @@
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { Controller, useForm } from 'react-hook-form';
 import React from 'react';
@@ -86,24 +87,30 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
           name="roomName"
           render={({ field: { value, onChange }, fieldState: { error } }) => {
             return (
-              <>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
                 <TextField
                   label="Your room name"
+                  sx={{ width: '60%' }}
                   error={!!error}
                   helperText={error?.message}
-                  fullWidth
                   value={value}
                   onChange={onChange}
                   autoFocus
                 />
                 <Button
                   onClick={generateRandomRoomName}
-                  sx={{ mt: 2 }}
                   variant="contained"
+                  sx={{ textTransform: 'capitalize' }}
                 >
-                  Random Name
+                  Generate Name
                 </Button>
-              </>
+              </Box>
             );
           }}
         />
