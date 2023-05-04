@@ -1,4 +1,5 @@
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { Controller, useForm } from 'react-hook-form';
 import React from 'react';
@@ -43,6 +44,13 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
     resolver: yupResolver(roomNameSchema),
   });
 
+  const generateRandomRoomName = async () => {
+    const roomName = Math.random().toString(36).substring(2, 8);
+    const validatedName = await roomNameSchema.validate({ roomName });
+    if (validatedName.roomName) roomNameForm.setValue('roomName', validatedName.roomName);
+    else generateRandomRoomName();
+  };
+
   const roomFormOnSubmit = roomNameForm.handleSubmit(async ({ roomName }) => {
     const parsed = urlParser.parse(youtubeUrl) as YouTubeParseResult;
     if (parsed) {
@@ -77,16 +85,34 @@ export const RoomNameForm: React.FC<Props> = ({ open, handleClose, youtubeUrl })
         <Controller
           control={roomNameForm.control}
           name="roomName"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              label="Your room name"
-              error={!!error}
-              helperText={error?.message}
-              fullWidth
-              {...field}
-              autoFocus
-            />
-          )}
+          render={({ field: { value, onChange }, fieldState: { error } }) => {
+            return (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <TextField
+                  label="Your room name"
+                  sx={{ width: '60%' }}
+                  error={!!error}
+                  helperText={error?.message}
+                  value={value}
+                  onChange={onChange}
+                  autoFocus
+                />
+                <Button
+                  onClick={generateRandomRoomName}
+                  variant="contained"
+                  sx={{ textTransform: 'capitalize' }}
+                >
+                  Generate Name
+                </Button>
+              </Box>
+            );
+          }}
         />
       </DialogContent>
       <DialogActions>
