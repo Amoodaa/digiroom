@@ -3,7 +3,7 @@ name: Deploy to GCP App engines
 on:
   push:
     branches:
-      - main
+      - none
 
 jobs:
   build_deploy:
